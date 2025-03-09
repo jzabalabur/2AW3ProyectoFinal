@@ -32,14 +32,21 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        try{
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
         ]);
 
+        
         return redirect()->route('admin.users.show', $user)
                          ->with('success', 'Usuario creado correctamente.');
+        } catch (\Exception $e){
+            return redirect()->back()
+            ->withInput() 
+            ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+        }
     }
 
     /**
@@ -64,6 +71,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        try{
         $user->name = $request->input('name');
         $user->email = $request->input('email');
 
@@ -76,6 +84,12 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.show', $user)
                          ->with('success', 'Usuario actualizado correctamente.');
+
+        } catch (\Exception $e){
+            return redirect()->back()
+            ->withInput() 
+            ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+        }
     }
 
     /**
@@ -83,9 +97,14 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        try{
         $user->delete();
 
         return redirect()->route('admin.users.index')
                          ->with('success', 'Usuario eliminado correctamente.');
+        } catch (\Exception $e){
+            return redirect()->back()
+            ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+        }      
     }
 }

@@ -22,7 +22,7 @@ class WebController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.webs.create');
     }
 
     /**
@@ -38,7 +38,7 @@ class WebController extends Controller
      */
     public function show(Web $web)
     {
-        //
+        return view('admin.webs.show', compact('web'));
     }
 
     /**
@@ -46,7 +46,7 @@ class WebController extends Controller
      */
     public function edit(Web $web)
     {
-        //
+        return view('admin.webs.edit', compact('web'));
     }
 
     /**
@@ -62,6 +62,10 @@ class WebController extends Controller
      */
     public function destroy(Web $web)
     {
-        //
+        $web->delete();
+
+        return redirect()->route('admin.webs.index')
+                         ->with('success', 'Web eliminada correctamente.');
+    
     }
 }

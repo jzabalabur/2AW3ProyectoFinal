@@ -10,6 +10,11 @@
 <div class="mx-auto px-6">
     <h2 class="text-3xl font-bold text-gray-800 mb-6">Crear Nuevo Usuario</h2>
 
+    @if (session('error'))
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        {{ session('error') }}
+    </div>
+    @endif
     <div class="bg-white p-6 rounded-lg shadow-md">
         <!-- Formulario de creación -->
         <form action="{{ route('admin.users.store') }}" method="POST">

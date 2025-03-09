@@ -8,6 +8,8 @@
 @endpush
 
 @section('content')
+<main class="flex-grow">
     <h1>Perfil de Usuario</h1>
     <p>Esta es la página de perfil del cliente.</p>
+</main>
 @stop

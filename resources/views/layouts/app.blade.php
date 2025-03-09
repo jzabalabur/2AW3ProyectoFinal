@@ -12,21 +12,19 @@
     <!-- Aquí puedes incluir los estilos específicos de cada página -->
     @stack('styles') <!-- Esto se usa para agregar CSS específico por página -->
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
     <!-- Header -->
-    <header>
+    
         @include('partials.header')  <!-- Aquí incluirás tu archivo de header -->
-    </header>
+    
 
     <!-- Contenido de la página -->
-    <main>
         @yield('content')  <!-- Aquí se mostrará el contenido específico de cada página -->
-    </main>
+
 
     <!-- Footer -->
-    <footer>
         @include('partials.footer')  <!-- Aquí incluirás tu archivo de footer -->
-    </footer>
+    
 
     <!-- Aquí puedes agregar tus scripts JS -->
     <script src="{{ asset('js/app.js') }}"></script>
