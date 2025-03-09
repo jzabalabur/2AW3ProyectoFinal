@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Página de Diseño')
+@section('title', 'Página de Diseño - Zablo')
 
 @push('styles')
     <!--CSS especifico de la pagina-->

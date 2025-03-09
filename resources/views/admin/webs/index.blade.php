@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Webs')
+@section('title', 'Webs - ZabloAdmin')
 
 @section('content_header')
     <h1>Webs</h1>

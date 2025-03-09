@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Crear Usuario')
+@section('title', 'Crear Usuario - ZabloAdmin')
 
 @section('content_header')
     {{ Breadcrumbs::render('usuarios.create') }}

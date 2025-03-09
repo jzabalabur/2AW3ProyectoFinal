@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Editar Usuario')
+@section('title', 'Editar Usuario - ZabloAdmin')
 
 @section('content_header')
     {{ Breadcrumbs::render('usuarios.edit', $user) }}

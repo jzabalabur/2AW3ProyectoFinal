@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Detalles del Usuario')
+@section('title', 'Detalles del Usuario - ZabloAdmin')
 
 @section('content_header')
     {{ Breadcrumbs::render('usuarios.show', $user) }}

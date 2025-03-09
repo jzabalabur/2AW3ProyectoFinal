@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Lista de Usuarios')
+@section('title', 'Lista de Usuarios - ZabloAdmin')
 
 @section('content_header')
     {{ Breadcrumbs::render('usuarios') }}
