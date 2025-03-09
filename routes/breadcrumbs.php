@@ -8,18 +8,18 @@ Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
 });
 // Admin Dashboard
 Breadcrumbs::for('admin.dashboard', function (BreadcrumbTrail $trail) {
-    $trail->parent('home'); // Inherit from the 'home' breadcrumb
+    $trail->parent('home'); 
     $trail->push('Admin Dashboard', route('admin.dashboard'));
 });
 
 // Admin > Usuarios
 Breadcrumbs::for('usuarios', function (BreadcrumbTrail $trail) {
-    $trail->parent('admin.dashboard'); // Inherit from the 'admin.dashboard' breadcrumb
-    $trail->push('Usuarios', route('usuarios'));
+    $trail->parent('admin.dashboard'); 
+    $trail->push('Usuarios', route('admin.users.index'));
 });
 
 // Admin > Webs
 Breadcrumbs::for('webs', function (BreadcrumbTrail $trail) {
-    $trail->parent('admin.dashboard'); // Inherit from the 'admin.dashboard' breadcrumb
-    $trail->push('Webs', route('webs'));
+    $trail->parent('admin.dashboard'); 
+    $trail->push('Webs', route('admin.webs.index'));
 });

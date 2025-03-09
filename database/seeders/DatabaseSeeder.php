@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
         User::create([
             'name' => 'Jon',
@@ -31,15 +30,17 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'name' => 'Jon',
-            'email' => 'jon@user.com',
+            'email' => 'jon@cliente.com',
             'password' => Hash::make('jon'),
         ]);
 
         // Create the second user
         User::create([
             'name' => 'Pablo',
-            'email' => 'pablo@user.com',
+            'email' => 'pablo@cliente.com',
             'password' => Hash::make('pablo'),
         ]);
+        User::factory(10)->create();
+
     }
 }
