@@ -22,6 +22,14 @@
     {{-- Custom stylesheets (pre AdminLTE) --}}
     @yield('adminlte_css_pre')
 
+     <!-- Tailwind -->
+     @vite('resources/css/app.css') <!-- Para Laravel 9+ -->
+    {{-- Si usas Laravel Mix, usa esto en su lugar --}}
+    {{-- <link rel="stylesheet" href="{{ mix('css/app.css') }}"> --}}
+
+    <!-- Estilos de AdminLTE -->
+    <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
+    
     {{-- Base Stylesheets (depends on Laravel asset bundling tool) --}}
     @if(config('adminlte.enabled_laravel_mix', false))
         <link rel="stylesheet" href="{{ mix(config('adminlte.laravel_mix_css_path', 'css/app.css')) }}">
@@ -130,6 +138,7 @@
 
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 </body>
 

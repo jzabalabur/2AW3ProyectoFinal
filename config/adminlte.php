@@ -306,12 +306,13 @@ return [
         ],
 
         // Sidebar items:
-        ['header' => 'tablas'],
+        
         [
             'text' => 'Dashboard',
             'url'  => '/admin',
             'icon' => 'fas fa-tachometer-alt',
         ],
+        ['header' => 'Tablas'],
         [
             'text' => 'Usuarios',
             'url'  => '/admin/users',
