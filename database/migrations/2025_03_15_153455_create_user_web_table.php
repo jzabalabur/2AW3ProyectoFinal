@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('webs', function (Blueprint $table) {
+        Schema::create('user_web', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('name'); 
-            $table->string('url');  
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('web_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('webs');
+        Schema::dropIfExists('user_web');
     }
 };

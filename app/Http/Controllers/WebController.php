@@ -30,7 +30,20 @@ class WebController extends Controller
      */
     public function store(StoreWebRequest $request)
     {
-        //
+        try{
+            $web = Web::create([
+                'name' => $request->input('name'),
+                'url' => $request->input('url')
+            ]);
+    
+            
+            return redirect()->route('admin.webs.show', $web)
+                             ->with('success', 'Web creada correctamente.');
+            } catch (\Exception $e){
+                return redirect()->back()
+                ->withInput() 
+                ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+            }
     }
 
     /**
@@ -54,7 +67,20 @@ class WebController extends Controller
      */
     public function update(UpdateWebRequest $request, Web $web)
     {
-        //
+        try{
+            $web->name = $request->input('name');
+            $web->url = $request->input('url');
+    
+            $web->save();
+    
+            return redirect()->route('admin.webs.show', $web)
+                             ->with('success', 'Web actualizada correctamente.');
+    
+            } catch (\Exception $e){
+                return redirect()->back()
+                ->withInput() 
+                ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+            }
     }
 
     /**
@@ -62,10 +88,15 @@ class WebController extends Controller
      */
     public function destroy(Web $web)
     {
-        $web->delete();
-
-        return redirect()->route('admin.webs.index')
-                         ->with('success', 'Web eliminada correctamente.');
+        try{
+            $web->delete();
+    
+            return redirect()->route('admin.webs.index')
+                             ->with('success', 'Web eliminada correctamente.');
+            } catch (\Exception $e){
+                return redirect()->back()
+                ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+            }  ;
     
     }
 }

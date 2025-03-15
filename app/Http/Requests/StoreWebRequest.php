@@ -22,7 +22,15 @@ class StoreWebRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'url' => 'required|url',
+        ];
+    }
+    public function messages()
+    {
+        return [
+            'url.required' => 'La URL es obligatoria.',
+            'url.url' => 'Por favor, introduzca una URL válida que comience con http:// o https://.',
         ];
     }
 }

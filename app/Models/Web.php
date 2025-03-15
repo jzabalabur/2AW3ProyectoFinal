@@ -14,11 +14,14 @@ class Web extends Model
     protected $fillable = [
         'name',
         'url',
-        'user_id',
     ];
     
-    public function user(): BelongsTo
+    public function users(): BelongsToMany
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class);
+    }
+    public function pages()
+    {
+        return $this->hasMany(Page::class);
     }
 }

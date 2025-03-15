@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PageController;
+
 
 
 
@@ -34,6 +36,10 @@ Route::middleware('auth')->group(function () {
 //Users
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class);
+});
+//Pages
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('pages', PageController::class);
 });
 //-----FIN Rutas Admin-----//
 
