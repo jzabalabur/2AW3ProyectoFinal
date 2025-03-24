@@ -3,12 +3,12 @@
 @section('title', 'Editar Web - ZabloAdmin')
 
 @section('content_header')
-    {{ Breadcrumbs::render('usuarios.edit', $web) }}
+    {{ Breadcrumbs::render('webs.edit', $web) }}
 @stop
 
 @section('content')
 <div class="mx-auto px-6">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Editar Usuario</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Editar Web</h2>
 
     @if (session('error'))
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">

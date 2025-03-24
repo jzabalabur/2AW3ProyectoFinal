@@ -3,7 +3,7 @@
 @section('title', 'Detalles de la web - ZabloAdmin')
 
 @section('content_header')
-    {{ Breadcrumbs::render('usuarios.show', $web) }}
+    {{ Breadcrumbs::render('webs.show', $web) }}
 @stop
 
 @section('content')
@@ -44,6 +44,11 @@
             <div class="border-b border-gray-200 pb-4">
                 <h3 class="text-lg font-semibold text-gray-700">URL</h3>
                 <p class="text-gray-900">{{ $web->url }}</p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-4">
+                <h3 class="text-lg font-semibold text-gray-700">Usuario</h3>
+                <p class="text-gray-900">{{ $web->user_id }}</p>
             </div>
 
             <div class="border-b border-gray-200 pb-4">

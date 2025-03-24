@@ -33,17 +33,26 @@ class WebController extends Controller
         try{
             $web = Web::create([
                 'name' => $request->input('name'),
-                'url' => $request->input('url')
+                'url' => $request->input('url'),
+                'user_id' => auth()->id(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
     
             
             return redirect()->route('admin.webs.show', $web)
                              ->with('success', 'Web creada correctamente.');
-            } catch (\Exception $e){
+            } catch (\Exception $e) {
+                // Registra el error exacto en el log
+                \Log::error('Error en WebController: ' . $e->getMessage(), [
+                    'exception' => $e
+                ]);
+            
                 return redirect()->back()
-                ->withInput() 
-                ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+                    ->withInput()
+                    ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.');
             }
+            
     }
 
     /**

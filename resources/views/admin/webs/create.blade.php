@@ -3,7 +3,7 @@
 @section('title', 'Crear Web - ZabloAdmin')
 
 @section('content_header')
-    {{ Breadcrumbs::render('usuarios.create') }}
+    {{ Breadcrumbs::render('webs.create') }}
 @stop
 
 @section('content')
