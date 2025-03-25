@@ -12,11 +12,11 @@
             <!-- Botones -->
             <a href="{{ route('diseno') }}"
                class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
-                Diseño
+               {{ __('general.disenyo') }}
             </a>
             <a href="{{ route('perfil') }}"
                class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
-                Perfil
+               {{ __('general.perfil') }}
             </a>
 
 
@@ -36,26 +36,37 @@
                         @csrf
                         <button type="submit"
                                 class="inline-block px-5 py-1.5 bg-purple-500 text-white border border-purple-600 hover:bg-purple-600 rounded-sm text-sm leading-normal transition-colors">
-                            Cerrar sesión
+                                {{ __('general.logout') }}
                         </button>
                     </form>
                 @else
                     <!-- Botón de Log in -->
                     <a href="{{ route('login') }}"
                        class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
-                        Log in
+                       {{ __('general.login') }}
                     </a>
 
                     <!-- Botón de Register -->
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}"
                            class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
-                            Register
+                           {{ __('general.registro') }}
                         </a>
                     @endif
                 @endauth
             @endif
+                    <!-- Botón Euskera (activo si locale es 'eu') -->
+        <a href="?lang=eu" class="{{ app()->getLocale() === 'eu' ? 'active' : '' }}">
+            EU
+        </a>
+        <p> | </p>
+        <!-- Botón Español (activo si locale es 'es') -->
+        <a href="?lang=es" class="{{ app()->getLocale() === 'es' ? 'active' : '' }}">
+            ES
+        </a>
         </div>
+       
+</div>
 
         <!-- Ícono de hamburguesa (visible en móvil y tablet) -->
         <div class="md:hidden">
@@ -72,11 +83,11 @@
         
         <a href="{{ route('diseno') }}"
            class="block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors mb-2">
-            Diseño
+           {{ __('general.disenyo') }}
         </a>
         <a href="{{ route('perfil') }}"
            class="block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors mb-2">
-            Perfil
+           {{ __('general.perfil') }}
         </a>
 
 
@@ -93,26 +104,36 @@
                     @csrf
                     <button type="submit"
                             class="block w-full px-5 py-1.5 bg-purple-500 text-white border border-purple-600 hover:bg-purple-600 rounded-sm text-sm leading-normal transition-colors">
-                        Cerrar sesión
+                            {{ __('general.logout') }}
                     </button>
                 </form>
             @else
                 <!-- Botón de Log in -->
                 <a href="{{ route('login') }}"
                    class="block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors mb-2">
-                    Log in
+                   {{ __('general.login') }}
                 </a>
 
                 <!-- Botón de Register -->
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}"
                        class="block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors mb-2">
-                        Register
+                       {{ __('general.registro') }}
                     </a>
                 @endif
             @endauth
         @endif
+        <!-- Botón Euskera (activo si locale es 'eu') -->
+        <a href="?lang=eu" class="{{ app()->getLocale() === 'eu' ? 'active' : '' }}">
+            EU
+        </a>
+        <p> | </p>
+        <!-- Botón Español (activo si locale es 'es') -->
+        <a href="?lang=es" class="{{ app()->getLocale() === 'es' ? 'active' : '' }}">
+            ES
+        </a>
     </div>
+
 </header>
 
 <!-- Script para el menú desplegable -->
