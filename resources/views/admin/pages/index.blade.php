@@ -1,15 +1,15 @@
 @extends('adminlte::page')
 
-@section('title', 'Webs - ZabloAdmin')
+@section('title', 'Páginas - ZabloAdmin')
 
 @section('content_header')
-    <h1>Webs</h1>
-    {{ Breadcrumbs::render('webs') }}
+    <h1>Páginas</h1>
+    {{ Breadcrumbs::render('pages', $web) }}
 @stop
 
 @section('content')
 <div class="mx-auto px-6">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Lista de Webs</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Páginas de {{ $web->url }}</h2>
     
     @if (session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
@@ -27,44 +27,41 @@
             <table class="w-full border-collapse border border-gray-300">
                 <thead class="bg-gray-800 text-white">
                     <tr>
-                        <th class="py-3 px-4 text-left">ID</th>
-                        <th class="py-3 px-4 text-left">Nombre</th>
-                        <th class="py-3 px-4 text-left">URL</th>
+                        <th class="py-3 px-4 text-left">Web</th>
+                        <th class="py-3 px-4 text-left">Tipo de página</th>
                         <th class="py-3 px-4 text-left">Creado</th>
+                        <th class="py-3 px-4 text-left">Editado</th>
                         <th class="py-3 px-4 text-right">
-                        <!--    
-                        <a href="{{ route('admin.webs.create') }}" 
+                        
+                        <!--
+                        <a href="{{ route('admin.webs.pages.create', $web) }}" 
                             class="inline-flex items-center bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
                             ➕ Crear nuevo registro
-                        </a>-->
-                        
+                        </a>
+                        -->
                         </th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-700">
-                    @foreach ($webs as $web)
+                    @foreach ($pages as $page)
                     <tr class="border-b border-gray-300 hover:bg-gray-100 transition duration-200">
-                        <td class="py-3 px-4">{{ $web->id }}</td>
-                        <td class="py-3 px-4">{{ $web->name }}</td>
                         <td class="py-3 px-4">{{ $web->url }}</td>
-                        <td class="py-3 px-4">{{ $web->created_at->format('d/m/Y') }}</td>
+                        <td class="py-3 px-4">{{ $page->type }}</td>
+                        <td class="py-3 px-4">{{ $page->created_at->format('d/m/Y') }}</td>
+                        <td class="py-3 px-4">{{ $page->updated_at->format('d/m/Y') }}</td>
                         <td class="py-3 px-4 flex justify-end space-x-2">
-                            <a href="{{ route('admin.webs.show', $web) }}" 
+                            <a href="{{ route('admin.webs.pages.show', ['web' => $web, 'page' => $page]) }}" 
                                 class="flex items-center bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
                                     👁️ Ver
                             </a>
-                            <a href="{{ route('admin.webs.edit', $web) }}" 
+                            <a href="{{ route('admin.webs.pages.edit', ['web' => $web, 'page' => $page]) }}" 
                                class="flex items-center bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
                                 ✏️ Editar
-                            </a>
-                            <a href="{{ route('admin.webs.pages.index', $web) }}" 
-                                class="flex items-center bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
-                                    📄 Ver Paginas
                             </a>
                                         <!-- Modal de Confirmación -->
                                         <div x-data="{ open: false, url: '' }" x-cloak>
                                             <!-- Botón para abrir el modal -->
-                                            <button x-on:click="open = true; url = '{{ route('admin.webs.destroy', $web) }}'" 
+                                            <button x-on:click="open = true; url = '{{ route('admin.webs.pages.destroy', ['web' => $web, 'page' => $page]) }}'" 
                                                     class="inline-flex items-center bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
                                                 🗑️ Eliminar
                                             </button>
@@ -76,7 +73,7 @@
                                             <div x-show="open" class="fixed inset-0 flex items-center justify-center z-50">
                                                 <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md">
                                                     <h3 class="text-xl font-bold text-gray-800 mb-4">¿Estás seguro?</h3>
-                                                    <p class="text-gray-700 mb-6">Esta acción eliminará la web permanentemente. ¿Deseas continuar?</p>
+                                                    <p class="text-gray-700 mb-6">Esta acción eliminará la página permanentemente. ¿Deseas continuar?</p>
 
                                                     <!-- Botones de acción -->
                                                     <div class="flex justify-end space-x-4">

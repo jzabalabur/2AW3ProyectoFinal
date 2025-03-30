@@ -33,7 +33,7 @@
             <!-- Campo: URL -->
             <div class="mb-4">
                 <label for="url" class="block text-gray-700">URL</label>
-                <input type="url" name="url" id="url" value="{{ old('url') }}" 
+                <input type="text" name="url" id="url" value="{{ old('url') }}" 
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 @error('url')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

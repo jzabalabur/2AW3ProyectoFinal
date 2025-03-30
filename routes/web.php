@@ -39,8 +39,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 });
 //Pages
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('pages', PageController::class);
-});
+    Route::resource('webs.pages', PageController::class);});
 //-----FIN Rutas Admin-----//
 
 

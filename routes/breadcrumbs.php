@@ -50,3 +50,23 @@ Breadcrumbs::for('webs', function (BreadcrumbTrail $trail) {
             $trail->parent('webs'); 
             $trail->push('Crear', route('admin.webs.create'));
         });
+
+// Webs > Pages
+Breadcrumbs::for('pages', function (BreadcrumbTrail $trail, $web) {
+    $trail->parent('webs', $web); 
+    $trail->push('Páginas', route('admin.webs.pages.index', $web));
+});
+        //CRUD Webs
+        Breadcrumbs::for('pages.show', function (BreadcrumbTrail $trail, $web, $page) {
+            $trail->parent('pages', $web);
+            $trail->push('Detalles', route('admin.webs.pages.show', ['web' => $web, 'page' => $page]));
+        });
+        Breadcrumbs::for('pages.edit', function (BreadcrumbTrail $trail, $web, $page) {
+            $trail->parent('pages', $web);
+            $trail->push('Editar', route('admin.webs.pages.edit', ['web' => $web, 'page' => $page]));
+        });
+       /* Breadcrumbs::for('pages.create', function (BreadcrumbTrail $trail, $web) {
+            $trail->parent('pages', $web);
+            $trail->push('Crear', route('admin.webs.pages.create', $web));
+        }); */
+        

@@ -43,7 +43,7 @@
                 <!-- Campo: URL -->
                 <div class="border-b border-gray-200 pb-4">
                     <label for="url" class="text-lg font-semibold text-gray-700">url</label>
-                    <input type="url" name="url" id="url" value="{{ old('url', $web->url) }}" 
+                    <input type="text" name="url" id="url" value="{{ old('url', $web->url) }}" 
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                     @error('url')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
