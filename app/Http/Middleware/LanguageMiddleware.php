@@ -12,31 +12,26 @@ class LanguageMiddleware
 {
     public function handle($request, Closure $next)
     {
-        
-        // Cambia a español solo si hay parámetro ?lang=es
-        if ($request->has('lang') && $request->lang === 'eu') {
-            $locale = 'eu';
-            $this->storeLocale($request->lang);
-        } else if ($request->has('lang') && $request->lang === 'es') {
-            $locale = 'es';
-            $this->storeLocale($request->lang);
-        } else {
-            $locale = $this->getStoredLocale();
+        if ($request->has('lang') && in_array($request->lang, ['eu', 'es'])) {
+            $locale = $request->lang;
+            $this->storeLocale($locale);
+        }
+        elseif ($locale = $request->cookie('app_locale')) {
+        }
+        elseif ($locale = session('app_locale')) {
+        }
+        else {
+            $locale = 'eu'; 
         }
 
-        
         App::setLocale($locale);
         
-        return $next($request);
+        return $next($request)->withCookie(cookie()->forever('app_locale', $locale));
     }
 
     protected function storeLocale($locale)
     {
-        Session::put('app_locale', $locale);
-    }
-
-    protected function getStoredLocale()
-    {
-    return Session::get('app_locale');
+        session(['app_locale' => $locale]); 
+        cookie()->forever('app_locale', $locale); 
     }
 }
