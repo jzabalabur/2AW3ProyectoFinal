@@ -37,6 +37,21 @@
         @if($layoutHelper->isRightSidebarEnabled())
             @include('adminlte::partials.navbar.menu-item-right-sidebar-toggler')
         @endif
+        <li class="nav-item">
+    <div class="d-flex align-items-center" style="height: 100%;">
+        <a href="{{ request()->fullUrlWithQuery(['lang' => 'eu']) }}" 
+           class="nav-link px-2 {{ app()->getLocale() === 'eu' ? 'text-bold' : 'text-muted' }}"
+           style="line-height: 1.8;">
+            EU
+        </a>
+        <span class="text-muted" style="line-height: 1.8;">|</span>
+        <a href="{{ request()->fullUrlWithQuery(['lang' => 'es']) }}" 
+           class="nav-link px-2 {{ app()->getLocale() === 'es' ? 'text-bold' : 'text-muted' }}"
+           style="line-height: 1.8;">
+            ES
+        </a>
+    </div>
+</li>
     </ul>
 
 </nav>

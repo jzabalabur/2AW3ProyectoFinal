@@ -9,7 +9,7 @@
 
         <!-- Texto debajo del logo -->
         <p class="mt-4 text-gray-400 text-sm">
-            Crea tu web a medida con Zablo. Simplificamos el diseño y desarrollo para ti.
-        </p>
+        {{ __('general.texto_footer') }}        
+    </p>
     </div>
 </footer>

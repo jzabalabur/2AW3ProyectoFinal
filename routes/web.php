@@ -2,11 +2,19 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PageController;
 
+Route::post('/change-language', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'language' => 'required|in:eu,es'
+    ]);
+    
+    return back()->withCookie(cookie()->forever('language', $request->language));
+})->name('language.change');
 
 
 
