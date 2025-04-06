@@ -33,10 +33,13 @@
                         <th class="py-3 px-4 text-left">Creado</th>
                         <th class="py-3 px-4 text-right">
                             
-                        <a href="{{ route('admin.users.create') }}" 
+                        @if(auth()->user()->hasRole('administrador'))
+                            <a href="{{ route('admin.users.create') }}" 
                             class="inline-flex items-center bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
-                            ➕ Crear nuevo registro
-                        </a>
+                                ➕ Crear nuevo registro
+                            </a>
+                        @endif
+
                         
                         </th>
                     </tr>
@@ -53,10 +56,12 @@
                                 class="flex items-center bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
                                     👁️ Ver
                             </a>
+                            @if(auth()->user()->hasRole('administrador'))
                             <a href="{{ route('admin.users.edit', $user) }}" 
                                class="flex items-center bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
                                 ✏️ Editar
                             </a>
+                            
                                         <!-- Modal de Confirmación -->
                                         <div x-data="{ open: false, url: '' }" x-cloak>
                                             <!-- Botón para abrir el modal -->
@@ -92,6 +97,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                            @endif
                                         <!--FIN modal-->
                         </td>
                     </tr>

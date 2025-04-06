@@ -58,6 +58,8 @@
         </div>
 
         <!-- Botones de acciones -->
+        @if(auth()->user()->hasRole('administrador'))
+        
         <div class="mt-6 flex space-x-4">
             <a href="{{ route('admin.users.edit', $user) }}" 
                class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
@@ -98,6 +100,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <!--FIN modal-->
         </div>
     </div>
