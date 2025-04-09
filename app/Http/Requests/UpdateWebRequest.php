@@ -22,7 +22,21 @@ class UpdateWebRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'url' => [
+            'required',
+            'regex:/^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}(\/[^\s]*)?$/', // Regex para aceptar URLs sin http:// o https://
+            ],
+        ];
+    }
+    public function messages()
+    {
+        return [
+            'name.required' => 'El nombre de la web es obligatorio.',
+            'name.string' => 'El nombre de la web debe ser una cadena de texto.',
+            'name.max' => 'El nombre de la web no puede tener más de 255 caracteres.',
+            'url.required' => 'La URL es obligatoria.',
+            'url.url' => 'Por favor, introduce una URL válida.',
         ];
     }
 }
