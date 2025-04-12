@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Web;  // Añadido
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -32,20 +34,19 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        try{
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('password')),
+            ]);
 
-        
-        return redirect()->route('admin.users.show', $user)
-                         ->with('success', 'Usuario creado correctamente.');
-        } catch (\Exception $e){
+            return redirect()->route('admin.users.show', $user)
+                             ->with('success', 'Usuario creado correctamente.');
+        } catch (\Exception $e) {
             return redirect()->back()
-            ->withInput() 
-            ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+                             ->withInput() 
+                             ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
         }
     }
 
@@ -63,7 +64,6 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return view('admin.users.edit', compact('user'));
-
     }
 
     /**
@@ -71,24 +71,23 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        try{
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
+        try {
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
 
-        // Si se proporciona una nueva contraseña, se actualiza
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->input('password'));
-        }
+            // Si se proporciona una nueva contraseña, se actualiza
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->input('password'));
+            }
 
-        $user->save();
+            $user->save();
 
-        return redirect()->route('admin.users.show', $user)
-                         ->with('success', 'Usuario actualizado correctamente.');
-
-        } catch (\Exception $e){
+            return redirect()->route('admin.users.show', $user)
+                             ->with('success', 'Usuario actualizado correctamente.');
+        } catch (\Exception $e) {
             return redirect()->back()
-            ->withInput() 
-            ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+                             ->withInput() 
+                             ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
         }
     }
 
@@ -97,14 +96,43 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        try{
-        $user->delete();
+        try {
+            $user->delete();
 
-        return redirect()->route('admin.users.index')
-                         ->with('success', 'Usuario eliminado correctamente.');
-        } catch (\Exception $e){
+            return redirect()->route('admin.users.index')
+                             ->with('success', 'Usuario eliminado correctamente.');
+        } catch (\Exception $e) {
             return redirect()->back()
-            ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
+                             ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
         }      
+    }
+
+    /**
+     * Display the user's profile with associated webs.
+     */
+    public function perfil()
+    {
+        $user = Auth::user();
+        $webs = $user->webs()->with('pages')->get();
+
+        return view('perfil.perfil', compact('user', 'webs'));
+    }
+
+    /**
+     * Detach a web from the user's profile.
+     */
+    public function detachWeb($webId)
+    {
+        $user = auth()->user();
+        $web = Web::findOrFail($webId);
+
+        // Verifica que el usuario tenga esa web
+        if (!$user->webs->contains($web)) {
+            return redirect()->route('perfil')->with('error', 'No tienes acceso a esta web.');
+        }
+
+        $user->webs()->detach($webId);
+
+        return redirect()->route('perfil')->with('success', 'Web eliminada de tu perfil.');
     }
 }

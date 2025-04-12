@@ -32,7 +32,7 @@
                         <th class="py-3 px-4 text-left">URL</th>
                         <th class="py-3 px-4 text-left">{{ __('dashboard.creado') }}</th>
                         <th class="py-3 px-4 text-right">
-                        <!--    
+                         
                         <a href="{{ route('admin.webs.create') }}" 
                             class="inline-flex items-center bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
                             ➕ {{ __('dashboard.crear_registro') }}

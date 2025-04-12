@@ -2,6 +2,7 @@
 
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
+
 //Home, pagina principal del proyecto
 Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
     $trail->push('Home', route('home'));
@@ -70,3 +71,8 @@ Breadcrumbs::for('pages', function (BreadcrumbTrail $trail, $web) {
             $trail->push('Crear', route('admin.webs.pages.create', $web));
         }); */
         
+//Perfil> vista de webs del usuario
+
+Breadcrumbs::for('perfil', function ($trail) {
+    $trail->push('Perfil', route('perfil'));
+});

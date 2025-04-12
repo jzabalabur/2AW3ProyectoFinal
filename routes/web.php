@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::delete('/perfil/webs/{id}', [UserController::class, 'detachWeb'])->name('perfil.webs.detach');
 });
 
 //-----INICIO Rutas Admin-----//
@@ -52,9 +54,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 
 //-----INICIO Rutas Cliente-----//
-Route::get('/perfil', function () {
-    return view('cliente.perfil');
-})->name('perfil');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/perfil', [UserController::class, 'perfil'])->name('perfil');
+});
+
 
 // Ruta para la página de diseño
 Route::get('/diseno', function () {

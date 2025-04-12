@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 class User extends Authenticatable
 {
@@ -37,7 +39,7 @@ class User extends Authenticatable
 
     public function webs(): BelongsToMany
     {
-        return $this->belongsToMany(Web::class);
+        return $this->belongsToMany(Web::class, 'user_web', 'user_id', 'web_id');
     }
     /**
      * Get the attributes that should be cast.
