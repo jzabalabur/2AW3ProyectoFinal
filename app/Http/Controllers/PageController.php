@@ -24,7 +24,7 @@ class PageController extends Controller
      */
     public function create(Web $web)
     {
-        return view('admin.pages.create');
+        return view('admin.pages.create', compact('web'));
 
     }
 
@@ -57,7 +57,7 @@ class PageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(eb $web, Page $page, Request $request)
+    public function update(Web $web, Page $page, Request $request)
     {
         //
     }

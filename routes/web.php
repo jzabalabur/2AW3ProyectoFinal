@@ -56,6 +56,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 //-----INICIO Rutas Cliente-----//
 Route::middleware(['auth'])->group(function () {
     Route::get('/perfil', [UserController::class, 'perfil'])->name('perfil');
+    Route::get('/webs/{web}/edit', [WebController::class, 'edit'])->name('webs.edit');
+    Route::delete('/webs/{web}', [WebController::class, 'destroy'])->name('webs.destroy');
+
 });
 
 

@@ -17,9 +17,9 @@ class Web extends Model
         'user_id'
     ];
     
-    public function users(): BelongsToMany
+    public function users()
     {
-        return $this->belongsToMany(User::class, 'user_web', 'web_id', 'user_id');
+        return $this->belongsToMany(User::class);
     }
 
     public function pages()

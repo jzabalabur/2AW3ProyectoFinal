@@ -23,8 +23,9 @@
 
                     <!-- Info de la web -->
                     <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-gray-800">{{ $web->nombre }}</h3>
-                        <p class="text-sm text-gray-500">Dominio: {{ $web->dominio ?? 'Sin dominio' }}</p>
+                        <h3 class="text-lg font-semibold text-gray-800">{{ $web->name }}</h3>
+                        <p class="text-sm text-gray-500">URL: {{ $web->url ?? 'Sin URL' }}</p>
+
                     </div>
 
                     <!-- Botones -->

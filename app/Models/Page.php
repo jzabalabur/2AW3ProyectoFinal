@@ -9,6 +9,8 @@ class Page extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['title', 'content', 'web_id'];
+
     public function web()
     {
         return $this->belongsTo(Web::class);

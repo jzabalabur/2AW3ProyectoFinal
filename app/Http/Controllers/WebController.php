@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWebRequest;
 use App\Http\Requests\UpdateWebRequest;
 use App\Models\Web;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WebController extends Controller
 {
@@ -68,7 +70,7 @@ class WebController extends Controller
      */
     public function edit(Web $web)
     {
-        return view('admin.webs.edit', compact('web'));
+        return view('webs.edit', compact('web'));
     }
 
     /**
@@ -107,5 +109,14 @@ class WebController extends Controller
                 ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
             }  ;
     
+    }
+
+    public function perfil()
+    {
+        $user = Auth::user();
+
+        $webs = $user->webs;
+
+        return view('perfil.perfil', compact('webs'));
     }
 }

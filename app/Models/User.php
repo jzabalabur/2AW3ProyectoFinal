@@ -37,9 +37,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function webs(): BelongsToMany
+    public function webs()
     {
-        return $this->belongsToMany(Web::class, 'user_web', 'user_id', 'web_id');
+        return $this->belongsToMany(Web::class);
     }
     /**
      * Get the attributes that should be cast.
