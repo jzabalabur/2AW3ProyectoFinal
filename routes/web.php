@@ -66,7 +66,18 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/diseno', function () {
     return view('cliente.diseno'); 
 })->name('diseno');
-
+Route::get('/diseno-bienvenida', function () {
+    return view('cliente.bienvenida'); 
+})->name('bienvenida');
+Route::get('/diseno-principal', function () {
+    return view('cliente.principal'); 
+})->name('principal');
+Route::get('/diseno-contacto', function () {
+    return view('cliente.contacto'); 
+})->name('contacto');
+Route::get('/diseno-publicar', function () {
+    return view('cliente.publicar'); 
+})->name('publicar');
 //-----FIN Rutas Cliente-----//
 
 

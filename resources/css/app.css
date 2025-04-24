@@ -5,3 +5,17 @@
     font-weight: bold;
     text-decoration: underline;
 }
+body{
+    background-image: url('../../public/images/fondo2.jpg') ;
+    background-repeat: no-repeat; 
+    background-size: cover;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-size: revert !important;
+    font-weight: revert !important;
+  }
+
+  html, body {
+    height: 100%;
+    overflow-y: auto; 
+  }

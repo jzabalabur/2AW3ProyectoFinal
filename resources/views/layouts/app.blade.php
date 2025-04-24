@@ -27,6 +27,16 @@
     
 
     <!-- Aquí puedes agregar tus scripts JS -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    @vite(['resources/js/app.js'])
+    <script>
+        // Pasar las rutas al objeto window global
+        window.routes = {
+            bienvenida: @json(route('bienvenida')),
+            principal: @json(route('principal')),
+            contacto: @json(route('contacto')),
+            publicar: @json(route('publicar'))
+        };
+    </script>
+    @stack('scripts')
 </body>
 </html>

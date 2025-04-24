@@ -8,7 +8,7 @@
 @endpush
 
 @section('content')
-<main class="flex-grow">
+<main id="contenedorPagina" class="flex-grow">
     <h1>PAGINA PRINCIPAL</h1>
     <p>NOTA: Todas las paginas del cliente estan hechas a partir del layout resources/views/layouts/app.blade.php</p>
     <p>En ese layout se introducen elementos como el header o el footer que se encuentran en: resources/views/partials</p>
