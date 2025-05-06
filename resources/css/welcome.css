@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap');
+
+/* Estilos generales 
+body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    font-family: 'Barlow Condensed', sans-serif;
+}*/
+
+/* Animación del carrusel */
+@keyframes scroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+}
+
+.animate-scroll {
+    animation: scroll 30s linear infinite;
+}
+
+/* Pausa la animación al pasar el cursor */
+#web-carousel:hover {
+    animation-play-state: paused;
+}
+
+/* Estilos del carrusel */
+#web-carousel {
+    font-family: 'Barlow Condensed', sans-serif !important;
+    font-size: 4.5rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    overflow: hidden;
+    height: 100%; /* o una altura fija si lo prefieres */
+    position: relative;
+}
+
+
+.web-link {
+    text-align: center;
+    color: white;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+#web-carousel a {
+    display: block;
+    font-family: inherit !important;
+    font-size: 4.5rem;
+    line-height: 1.2;
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    animation: scrollVertical 20s linear infinite;
+
+}
+
+#web-carousel a:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Títulos y textos */
+.title-message {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 5.5rem !important;
+    line-height: 1;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.welcome-message {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.5rem !important;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+}
+
+/* Efectos de hover para botones */
+a.bg-blue-600 {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5);
+}
+
+a.bg-blue-600:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.6);
+}
+
+a.bg-transparent {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+a.bg-transparent:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+}
+
+/* Efectos para las tarjetas */
+.bg-white\/10 {
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+}
+
+.hover\:transform:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Efectos de animación para elementos */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+.relative img {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Efectos para las estrellas de valoración */
+.text-yellow-500 {
+    color: #FBBF24;
+    filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.5));
+}
+
+/* Mejoras para imágenes de testimonios */
+.rounded-full {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    transition: all 0.3s ease;
+}
+
+.rounded-full:hover {
+    transform: scale(1.1);
+}
+
+@keyframes scrollVertical {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .title-message {
+        font-size: 4rem !important;
+    }
+    
+    .welcome-message {
+        font-size: 2rem !important;
+    }
+    
+    #web-carousel a {
+        font-size: 3.5rem;
+        padding: 12px 18px;
+    }
+}
+
+@media (max-width: 640px) {
+    .title-message {
+        font-size: 3.5rem !important;
+    }
+    
+    .welcome-message {
+        font-size: 1.8rem !important;
+    }
+    
+    #web-carousel a {
+        font-size: 3rem;
+        padding: 10px 16px;
+    }
+}

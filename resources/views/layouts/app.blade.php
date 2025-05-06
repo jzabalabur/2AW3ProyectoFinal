@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Mi Aplicación')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('images/logo_sinFondo_simbolo.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed&display=swap" rel="stylesheet">
+    
     <!-- Cargar el CSS común para todas las páginas -->
-    @vite(['resources/css/app.css'])
-    @vite(['resources/css/cliente.css'])
+    @vite(['resources/css/app.css', 'resources/css/cliente.css', 'resources/css/welcome.css'])
+
+
 
     <!-- Aquí puedes incluir los estilos específicos de cada página -->
     @stack('styles') <!-- Esto se usa para agregar CSS específico por página -->
+
 </head>
 <body class="flex flex-col min-h-screen">
     <!-- Header -->

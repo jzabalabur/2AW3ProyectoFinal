@@ -18,14 +18,13 @@ Route::post('/change-language', function (\Illuminate\Http\Request $request) {
 
 
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [WebController::class, 'home'])->name('home');
 
 //Route::get('/dashboard', function () {
 //   return view('dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
 
+// Perfil y opciones generales autenticadas
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -35,32 +34,38 @@ Route::middleware('auth')->group(function () {
 });
 
 //-----INICIO Rutas Admin-----//
-//Dashboard
- Route::get('/admin', function () {
-     return view('admin.dashboard');
- })->middleware('auth')->name('admin.dashboard');
-//Webs
- Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard admin
+    Route::get('/', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
+    // Webs (admin)
     Route::resource('webs', WebController::class);
-});
-//Users
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Usuarios (admin)
     Route::resource('users', UserController::class);
+
+    // Pages de cada web (admin)
+    Route::resource('webs.pages', PageController::class);
 });
-//Pages
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('webs.pages', PageController::class);});
 //-----FIN Rutas Admin-----//
 
 
 //-----INICIO Rutas Cliente-----//
 Route::middleware(['auth'])->group(function () {
+    // Dashboard del cliente
+    Route::get('/dashboard', [WebController::class, 'home'])->name('cliente.dashboard');
+
+    // Perfil
     Route::get('/perfil', [UserController::class, 'perfil'])->name('perfil');
+
+    // Webs del cliente
     Route::get('/webs/{web}/edit', [WebController::class, 'edit'])->name('webs.edit');
     Route::delete('/webs/{web}', [WebController::class, 'destroy'])->name('webs.destroy');
-
 });
-
+//-----FIN Rutas Cliente-----//
 
 // Ruta para la página de diseño
 Route::get('/diseno', function () {

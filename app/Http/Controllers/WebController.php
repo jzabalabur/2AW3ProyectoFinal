@@ -32,29 +32,41 @@ class WebController extends Controller
      */
     public function store(StoreWebRequest $request)
     {
-        try{
+        try {
+            // Crear la web sin user_id (porque es una relación many-to-many)
             $web = Web::create([
                 'name' => $request->input('name'),
                 'url' => $request->input('url'),
-                'user_id' => auth()->id(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-    
-            
-            return redirect()->route('admin.webs.show', $web)
-                             ->with('success', 'Web creada correctamente.');
-            } catch (\Exception $e) {
-                // Registra el error exacto en el log
-                \Log::error('Error en WebController: ' . $e->getMessage(), [
-                    'exception' => $e
-                ]);
-            
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.');
+            dd($web); 
+
+            // Obtener el usuario autenticado
+            $user = auth()->user();
+            dd($user);
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'Debes iniciar sesión primero.');
             }
-            
+
+            // Asociar la web al usuario autenticado (relación many-to-many)
+            $user->webs()->attach($web->id);
+
+            return redirect()->route('admin.webs.show', $web)
+                             ->with('success', 'Web creada y vinculada correctamente.');
+        } catch (\Exception $e) {
+            // Loguear el error detallado
+            \Log::error('Error en WebController@store: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request_data' => $request->all(),
+                'user_id' => auth()->id(),
+            ]);
+
+            // Devolver una respuesta amigable al usuario
+            return redirect()->back()
+                             ->withInput()
+                             ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.');
+        }
     }
 
     /**
@@ -78,7 +90,7 @@ class WebController extends Controller
      */
     public function update(UpdateWebRequest $request, Web $web)
     {
-        try{
+        try {
             $web->name = $request->input('name');
             $web->url = $request->input('url');
     
@@ -87,11 +99,11 @@ class WebController extends Controller
             return redirect()->route('admin.webs.show', $web)
                              ->with('success', 'Web actualizada correctamente.');
     
-            } catch (\Exception $e){
-                return redirect()->back()
-                ->withInput() 
-                ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
-            }
+        } catch (\Exception $e) {
+            return redirect()->back()
+                             ->withInput() 
+                             ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.');
+        }
     }
 
     /**
@@ -99,16 +111,15 @@ class WebController extends Controller
      */
     public function destroy(Web $web)
     {
-        try{
+        try {
             $web->delete();
     
             return redirect()->route('admin.webs.index')
                              ->with('success', 'Web eliminada correctamente.');
-            } catch (\Exception $e){
-                return redirect()->back()
-                ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.'); 
-            }  ;
-    
+        } catch (\Exception $e) {
+            return redirect()->back()
+                             ->with('error', 'Ups... Parece que el servidor está ocupado. Por favor, vuelve a intentarlo en unos minutos.');
+        }
     }
 
     public function perfil()
@@ -118,5 +129,12 @@ class WebController extends Controller
         $webs = $user->webs;
 
         return view('perfil.perfil', compact('webs'));
+    }
+
+    public function home()
+    {
+        $webs = Web::all();
+
+        return view('welcome', compact('webs'));
     }
 }

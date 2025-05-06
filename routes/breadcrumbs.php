@@ -7,49 +7,51 @@ use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
     $trail->push('Home', route('home'));
 });
+
 // Admin Dashboard
 Breadcrumbs::for('admin.dashboard', function (BreadcrumbTrail $trail) {
-    $trail->parent('home'); 
+    $trail->parent('home');
     $trail->push('Admin Dashboard', route('admin.dashboard'));
 });
 
+
 // Admin > Usuarios
-Breadcrumbs::for('usuarios', function (BreadcrumbTrail $trail) {
-    $trail->parent('admin.dashboard'); 
+Breadcrumbs::for('admin.usuarios', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.dashboard');
     $trail->push('Usuarios', route('admin.users.index'));
 });
         //CRUD Usuarios
-        Breadcrumbs::for('usuarios.show', function (BreadcrumbTrail $trail, $user) {
-            $trail->parent('usuarios'); 
-            $trail->push('Detalles', route('admin.users.show', $user));
+        Breadcrumbs::for('admin.usuarios.create', function (BreadcrumbTrail $trail) {
+            $trail->parent('admin.usuarios');
+            $trail->push('Crear Usuario', route('admin.users.create'));
         });
-        Breadcrumbs::for('usuarios.edit', function (BreadcrumbTrail $trail, $user) {
-            $trail->parent('usuarios'); 
-            $trail->push('Editar', route('admin.users.edit', $user));
+        Breadcrumbs::for('admin.usuarios.edit', function (BreadcrumbTrail $trail, $user) {
+            $trail->parent('admin.usuarios');
+            $trail->push('Editar Usuario', route('admin.users.edit', $user));
         });
-        Breadcrumbs::for('usuarios.create', function (BreadcrumbTrail $trail) {
-            $trail->parent('usuarios'); 
-            $trail->push('Crear', route('admin.users.create'));
+        Breadcrumbs::for('admin.usuarios.show', function (BreadcrumbTrail $trail, $user) {
+            $trail->parent('admin.usuarios');
+            $trail->push('Detalles Usuario', route('admin.users.show', $user));
         });
 
 
 // Admin > Webs
-Breadcrumbs::for('webs', function (BreadcrumbTrail $trail) {
-    $trail->parent('admin.dashboard'); 
+Breadcrumbs::for('admin.webs', function (BreadcrumbTrail $trail) {
+    $trail->parent('admin.dashboard');
     $trail->push('Webs', route('admin.webs.index'));
 });
         //CRUD Webs
-        Breadcrumbs::for('webs.show', function (BreadcrumbTrail $trail, $web) {
-            $trail->parent('webs'); 
-            $trail->push('Detalles', route('admin.webs.show', $web));
+        Breadcrumbs::for('admin.webs.create', function (BreadcrumbTrail $trail) {
+            $trail->parent('admin.webs');
+            $trail->push('Crear Web', route('admin.webs.create'));
         });
-        Breadcrumbs::for('webs.edit', function (BreadcrumbTrail $trail, $web) {
-            $trail->parent('webs'); 
-            $trail->push('Editar', route('admin.webs.edit', $web));
+        Breadcrumbs::for('admin.webs.edit', function (BreadcrumbTrail $trail, $web) {
+            $trail->parent('admin.webs');
+            $trail->push('Editar Web', route('admin.webs.edit', $web));
         });
-        Breadcrumbs::for('webs.create', function (BreadcrumbTrail $trail) {
-            $trail->parent('webs'); 
-            $trail->push('Crear', route('admin.webs.create'));
+        Breadcrumbs::for('admin.webs.show', function (BreadcrumbTrail $trail, $web) {
+            $trail->parent('admin.webs');
+            $trail->push('Detalles Web', route('admin.webs.show', $web));
         });
 
 // Webs > Pages
@@ -71,8 +73,34 @@ Breadcrumbs::for('pages', function (BreadcrumbTrail $trail, $web) {
             $trail->push('Crear', route('admin.webs.pages.create', $web));
         }); */
         
-//Perfil> vista de webs del usuario
+// Cliente Dashboard
+Breadcrumbs::for('cliente.dashboard', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Cliente Dashboard', route('cliente.dashboard'));
+});
 
-Breadcrumbs::for('perfil', function ($trail) {
+// Cliente > Webs
+Breadcrumbs::for('cliente.webs', function (BreadcrumbTrail $trail) {
+    $trail->parent('cliente.dashboard');
+    $trail->push('Mis Webs', route('perfil.webs.index'));
+});
+        //CRUD Webs
+        Breadcrumbs::for('cliente.webs.create', function (BreadcrumbTrail $trail) {
+            $trail->parent('cliente.webs');
+            $trail->push('Crear Web', route('perfil.webs.create'));
+        });
+        Breadcrumbs::for('cliente.webs.edit', function (BreadcrumbTrail $trail, $web) {
+            $trail->parent('cliente.webs');
+            $trail->push('Editar Web', route('webs.edit', $web));
+        });
+        Breadcrumbs::for('cliente.webs.show', function (BreadcrumbTrail $trail, $web) {
+            $trail->parent('cliente.webs');
+            $trail->push('Detalles Web', route('webs.show', $web));
+        });
+
+// Cliente > Perfil
+Breadcrumbs::for('cliente.perfil', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
     $trail->push('Perfil', route('perfil'));
 });
+

@@ -24,7 +24,6 @@
             </div>
         </div>
         <h3>Configura tu página</h3>
-        <h1>Paso 1</h1>
         <p>Nuestro diseñador incluye una página principal donde promocionar tu negocio, tus habilidades o el mensaje que tú decidas. Además, tienes la opción de incluir un mensaje de bienvenida y una página de contacto.</p>
 
         <label>
@@ -41,7 +40,4 @@
 @stop
 @push('scripts')
 @vite(['resources/js/diseno.js'])
-
-
-
 @endpush

@@ -23,13 +23,31 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+{
+    $request->authenticate();
+    $request->session()->regenerate();
 
-        $request->session()->regenerate();
+    $user = auth()->user();
 
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+    // Debug temporal
+    // dd($user->getRoleNames());
+
+    if ($user->hasRole('admin')) {
+        return redirect()->route('admin.dashboard');
     }
+
+    if ($user->hasRole('cliente')) {
+        return redirect()->route('home');
+    }
+
+    Auth::logout();
+    return redirect('/login')->withErrors([
+        'email' => 'Tu cuenta no tiene un rol válido.',
+    ]);
+}
+
+
+
 
     /**
      * Destroy an authenticated session.

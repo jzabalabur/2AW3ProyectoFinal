@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Web;  // Añadido
+use App\Models\Web;  
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+
+    
     /**
      * Display a listing of the resource.
      */
@@ -113,7 +116,14 @@ class UserController extends Controller
     public function perfil()
     {
         $user = Auth::user();
-        $webs = $user->webs()->with('pages')->get();
+        
+        // Muestra webs del cliente y páginas asociadas
+        if ($user->hasRole('cliente')) {
+            $webs = $user->webs()->with('pages')->get();
+        } else {
+        // Muestra todas las webs y páginas asociadas
+            $webs = Web::with('pages')->get();
+        }
 
         return view('perfil.perfil', compact('user', 'webs'));
     }
@@ -135,4 +145,7 @@ class UserController extends Controller
 
         return redirect()->route('perfil')->with('success', 'Web eliminada de tu perfil.');
     }
+
+    
+
 }

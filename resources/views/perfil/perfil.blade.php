@@ -5,8 +5,7 @@
 
     <!-- Nombre del Usuario -->
     <h1 class="text-3xl font-bold text-gray-800 mb-6">
-        {{ $user->name }}, Id: 
-        {{ $user->id}}
+        {{ $user->name }}, Id: {{ $user->id }}
     </h1>
 
     <!-- Lista de Webs Creadas -->
@@ -26,6 +25,17 @@
                         <h3 class="text-lg font-semibold text-gray-800">{{ $web->name }}</h3>
                         <p class="text-sm text-gray-500">URL: {{ $web->url ?? 'Sin URL' }}</p>
 
+                        <!-- Mostrar las páginas asociadas a esta web -->
+                        @if($web->pages->isNotEmpty())
+                            <h4 class="text-sm font-semibold text-gray-600 mt-2">Páginas:</h4>
+                            <ul class="list-disc pl-5">
+                                @foreach ($web->pages as $page)
+                                    <li>{{ $page->title }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-sm text-gray-500">No hay páginas asociadas a esta web.</p>
+                        @endif
                     </div>
 
                     <!-- Botones -->
