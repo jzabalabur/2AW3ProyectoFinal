@@ -577,9 +577,9 @@ async function saveAndContinue() {
                 text: headerTextInput.value,
                 bgColor: headerBgColorInput.value,
                 textColor: headerTextColorInput.value,
-                padding: '15px', // Añadido padding del header
-                paddingLeft: logoPositionInput.value === 'left' ? '30px' : '15px', // Añadido padding izquierdo
-                paddingRight: logoPositionInput.value === 'left' ? '30px' : '15px' // Añadido padding derecho
+                padding: '15px', 
+                paddingLeft: logoPositionInput.value === 'left' ? '30px' : '15px', 
+                paddingRight: logoPositionInput.value === 'left' ? '30px' : '15px' 
             },
             mainPhoto: mainPhotoData ? {
                 id: mainPhotoData.id,
@@ -589,8 +589,8 @@ async function saveAndContinue() {
                 title: photoTitleInput.value,
                 description: photoDescriptionInput.value,
                 align: descriptionAlignInput.value,
-                descriptionPadding: '0 30px', // Añadido padding de la descripción
-                descriptionMargin: '15px 0' // Añadido margen de la descripción
+                descriptionPadding: '0 30px', 
+                descriptionMargin: '15px 0' 
             },
             fontFamily: fontFamilyInput.value,
             textColor: textColorInput.value,
@@ -598,7 +598,7 @@ async function saveAndContinue() {
                 text: footerTextInput.value,
                 bgColor: footerBgColorInput.value,
                 textColor: footerTextColorInput.value,
-                padding: '15px' // Añadido padding del footer
+                padding: '15px'
             },
             
             // Contenido intermedio
@@ -608,18 +608,18 @@ async function saveAndContinue() {
                     icon: col.querySelector('.icon-select').value,
                     text: col.querySelector('.feature-text').value
                 })),
-                modulePadding: '20px', // Añadido padding del módulo
-                moduleMargin: '20px 0' // Añadido margen del módulo
+                modulePadding: '20px', 
+                moduleMargin: '20px 0' 
             } : null,
             video: contentTypeInput.value === 'video' ? {
                 url: videoUrlInput.value,
                 description: videoDescInput.value,
-                videoMargin: '20px 0' // Añadido margen del video
+                videoMargin: '20px 0' 
             } : null,
             map: contentTypeInput.value === 'map' ? {
                 address: mapAddressInput.value,
                 description: mapDescInput.value,
-                mapMargin: '20px 0' // Añadido margen del mapa
+                mapMargin: '20px 0' 
             } : null
         };
 

@@ -1,0 +1,56 @@
+ .domain-check-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .domain-form {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .domain-form .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .domain-form input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .domain-result {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .domain-result.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        
+        .domain-result.error {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            display: block;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        #publish-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            margin-top: 20px;
+        }

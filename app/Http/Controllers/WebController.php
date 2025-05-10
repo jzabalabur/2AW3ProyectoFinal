@@ -137,4 +137,20 @@ class WebController extends Controller
 
         return view('welcome', compact('webs'));
     }
+
+public function verificarUrl(Request $request)
+{
+    $url = $request->input('url');
+
+    if (!$url) {
+        return response()->json(['error' => 'URL no proporcionada'], 400);
+    }
+
+    // Busca el dominio tal cual se envía
+    $existe = Web::where('url', $url)->exists();
+
+    // Devuelve 'disponible' = true si NO existe
+    return response()->json(['disponible' => !$existe]);
+}
+
 }

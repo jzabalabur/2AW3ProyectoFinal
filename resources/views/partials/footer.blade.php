@@ -1,4 +1,4 @@
-<footer class="bg-black py-8">
+<footer class="bg-black py-8 foot">
     <div class="container mx-auto px-6 text-center">
         <!-- Logo -->
         <div class="flex justify-center">

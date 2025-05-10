@@ -23,6 +23,7 @@ Route::get('/', [WebController::class, 'home'])->name('home');
 //Route::get('/dashboard', function () {
 //   return view('dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
+Route::post('/verificar-url', [WebController::class, 'verificarUrl']);
 
 // Perfil y opciones generales autenticadas
 Route::middleware('auth')->group(function () {

@@ -474,7 +474,9 @@ function resetForm() {
 // Función para guardar los datos y continuar
 function saveAndContinue() {
     saveContactData();
-    window.location.href = '../publish/publish.html';
+    setTimeout(() => {
+        window.location.href = window.routes.publicar;
+    }, 550); // 550 ms de margen
 }
 
 // Configuración de eventos
