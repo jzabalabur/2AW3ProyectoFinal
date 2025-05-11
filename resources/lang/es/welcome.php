@@ -3,6 +3,7 @@ return [
     /**Se insertan asi: {{ __('nombreFichero.nombreVariable') }} */
     /**Titulos, descripciones... etc */
     'titular' => 'CONSTRUYE TU FUTURO',
+    'digital' => 'DIGITAL',
     'message' => 'Crea tu página web en minutos, elige tu dominio y publícala automáticamente. 
                 Sin complicaciones, sin códigos.',
     'p1' => 'Empieza ahora',  

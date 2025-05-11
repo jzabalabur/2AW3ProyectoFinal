@@ -16,7 +16,7 @@
         <!-- Texto de bienvenida -->
         <div class="md:w-1/2 text-center md:text-left">
             <h1 class="title-message">            
-            {{ __('welcome.titular') }} <span class="text-blue-400">DIGITAL</span>
+            {{ __('welcome.titular') }} <span class="text-blue-400">{{ __('welcome.digital') }}</span>
             </h1>
             <p class="welcome-message">
             {{ __('welcome.message') }}
