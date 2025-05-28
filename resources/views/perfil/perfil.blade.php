@@ -4,21 +4,22 @@
 <main class="container mx-auto px-6 py-8">
 
     <!-- Nombre del Usuario -->
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">
-        {{ $user->name }}, Id: {{ $user->id }}
+    <h1 class="text-3xl font-bold text-white mb-6">
+        {{ $user->name }}
+        <!-- , Id: {{ $user->id }} -->
     </h1>
 
     <!-- Lista de Webs Creadas -->
     <section>
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Tus páginas web</h2>
+        <h2 class="text-2xl font-semibold text-white mb-4">Tus páginas web</h2>
 
         <div class="space-y-4">
             @forelse ($webs as $web)
                 <div class="flex items-center bg-white shadow-md rounded-md p-4">
-                    <!-- Imagen del sitio web -->
+                    <!-- Imagen del sitio web
                     <div class="w-32 h-20 bg-gray-200 rounded mr-4 flex-shrink-0 flex items-center justify-center text-sm text-gray-500">
                         Imagen no disponible
-                    </div>
+                    </div> -->
 
                     <!-- Info de la web -->
                     <div class="flex-1">

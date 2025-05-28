@@ -8,6 +8,7 @@ return [
                 Zailtasunik gabe, koderik gabe.',
     'p1' => 'Hasi orain',  
     'p2' => 'Ikusi demoak',
+    'sitios'=> 'ZABLOK SORTUTAKO GUNEAK',
     'why' => 'ZERGATIK AUKERATU ZABLO?',
     'c1' => 'Azkarra eta erraza',
     'c1a' => 'Interfazea intuitiboa da, eta zure webgunea sortzea oso erraza eta azkarra da.',

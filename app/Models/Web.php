@@ -14,6 +14,7 @@ class Web extends Model
     protected $fillable = [
         'name',
         'url',
+        'user_id'
     ];
     
     public function users()

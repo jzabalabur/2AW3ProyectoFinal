@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Página de Diseño - Zablo')
+@section('title', __('contacto.pagina_diseno_titulo'))
 
 @push('styles')
     <!--CSS especifico de la pagina-->
@@ -16,40 +16,40 @@
                 <div class="progress" style="width: 60%;"></div>
             </div>
             <div class="progress-steps">
-                <div class="progress-step completed">Inicio</div>
-                <div class="progress-step completed">Bienvenida</div>
-                <div class="progress-step completed">Principal</div>
-                <div class="progress-step active">Contacto</div>
-                <div class="progress-step">Publicar</div>
+                <div class="progress-step completed">{{ __('contacto.inicio') }}</div>
+                <div class="progress-step active">{{ __('contacto.bienvenida') }}</div>
+                <div class="progress-step">{{ __('contacto.principal') }}</div>
+                <div class="progress-step">{{ __('contacto.contacto') }}</div>
+                <div class="progress-step">{{ __('contacto.publicar') }}</div>
             </div>
         </div>
         
         <div class="design-container">
             <!-- Contenedor de vista previa -->
             <div class="preview-container">
-                <h3>Vista Previa</h3>
+                <h3>{{ __('contacto.vista_previa') }}</h3>
                 <div id="preview" class="preview"></div>
             </div>
 
             <!-- Contenedor del formulario -->
             <div class="form-container">
-                <h3>Diseñar página de contacto</h3>
+                <h3>{{ __('contacto.diseno_contacto') }}</h3>
                 <form id="design-form">
                     <div class="form-section">
-                        <h3>Información de Contacto</h3>
-                        <p>Selecciona qué información mostrar:</p>
+                        <h3>{{ __('contacto.informacion_contacto') }}</h3>
+                        <p>{{ __('contacto.selecciona_informacion') }}</p>
                         <div id="contact-options"></div>
                     </div>
 
                     <div class="form-section">
-                        <h3>Mapa de Ubicación</h3>
+                        <h3>{{ __('contacto.mapa_ubicacion') }}</h3>
                         <div class="form-group">
                             <input type="checkbox" id="show-map" name="show-map">
-                            <label for="show-map">Mostrar mapa de ubicación</label>
+                            <label for="show-map">{{ __('contacto.mostrar_mapa') }}</label>
                         </div>
                         <div class="form-group">
-                            <label for="map-address">Dirección para el mapa:</label>
-                            <input type="text" id="map-address" class="form-control" placeholder="Ej: Calle Principal 123, Ciudad">
+                            <label for="map-address">{{ __('contacto.direccion_mapa') }}</label>
+                            <input type="text" id="map-address" class="form-control" placeholder="{{ __('contacto.placeholder_direccion') }}">
                         </div>
                     </div>
                 </form>
@@ -58,8 +58,8 @@
         
         <!-- Botones -->
         <div class="button-container">
-            <button type="button" id="reset-btn" class="reset-button">🗑️ Empezar de cero</button>
-            <button type="button" id="continue-btn" class="primary-button">Continuar</button>
+            <button type="button" id="reset-btn" class="reset-button">🗑️ {{ __('contacto.empezar_de_cero') }}</button>
+            <button type="button" id="continue-btn" class="primary-button">{{ __('contacto.continuar') }}</button>
         </div>
     </div>
 
@@ -67,11 +67,11 @@
     <div id="reset-modal" class="modal">
         <div class="modal-overlay"></div>
         <div class="modal-content">
-            <h3 class="modal-title">¿Estás seguro?</h3>
-            <p class="modal-message">Esta acción borrará todo tu diseño actual. ¿Deseas continuar?</p>
+            <h3 class="modal-title">{{ __('contacto.seguro_reset') }}</h3>
+            <p class="modal-message">{{ __('contacto.mensaje_reset') }}</p>
             <div class="modal-actions">
-                <button id="cancel-reset" class="modal-button cancel">Cancelar</button>
-                <button id="confirm-reset" class="modal-button confirm">Borrar todo</button>
+                <button id="cancel-reset" class="modal-button cancel">{{ __('contacto.cancelar') }}</button>
+                <button id="confirm-reset" class="modal-button confirm">{{ __('contacto.borrar_todo') }}</button>
             </div>
         </div>
     </div>

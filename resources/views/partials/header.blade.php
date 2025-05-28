@@ -10,14 +10,19 @@
         <!-- Botones a la derecha (visible en desktop) -->
         <div class="hidden md:flex items-center gap-4">
             <!-- Botones -->
-            <a href="{{ route('diseno') }}"
-               class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
-               {{ __('general.disenyo') }}
-            </a>
-            <a href="{{ route('perfil') }}"
-               class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
-               {{ __('general.perfil') }}
-            </a>
+            @auth
+                <!-- Botón Diseño -->
+                <a href="{{ route('diseno') }}"
+                class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
+                {{ __('general.disenyo') }}
+                </a>
+
+                <!-- Botón Perfil -->
+                <a href="{{ route('perfil') }}"
+                class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
+                {{ __('general.perfil') }}
+                </a>
+            @endauth
 
 
 
@@ -25,10 +30,15 @@
             @if (Route::has('login'))
                 @auth
                 <!--FALTA IMPLEMENTAR CAN PARA QUE ESTE BOTON SOLO SEA VISIBLE AL LOGUEARSE CON UN ADMIN-->
-                <a href="{{ route('admin.dashboard') }}"
-                    class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
-                    Dashboard
-                </a>
+                @auth
+                    @role('admin')
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="inline-block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors">
+                        Dashboard
+                    </a>
+                    @endrole
+                @endauth
+
 
                     <!-- Botón de Logout -->
                      
@@ -93,12 +103,12 @@
 
         @if (Route::has('login'))
             @auth
-            <!--FALTA IMPLEMENTAR CAN PARA QUE ESTE BOTON SOLO SEA VISIBLE AL LOGUEARSE CON UN ADMIN-->
-            <a href="{{ route('admin.dashboard') }}"
-                class="block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors mb-2">
-                Dashboard
-            </a>
-
+                @role('admin')
+                <a href="{{ route('admin.dashboard') }}"
+                    class="block px-5 py-1.5 text-gray-700 border border-transparent hover:border-gray-300 rounded-sm text-sm leading-normal transition-colors mb-2">
+                    Dashboard
+                </a>
+                @endrole
                 <!-- Botón de Logout -->
                 <form method="POST" action="{{ route('logout') }}" class="inline">
                     @csrf

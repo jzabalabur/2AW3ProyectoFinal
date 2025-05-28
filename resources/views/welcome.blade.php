@@ -25,7 +25,7 @@
                 <a href="#cta" class="bg-blue-600 hover:bg-blue-700 transition-all text-white py-3 px-8 rounded-lg text-xl font-bold">
                 {{ __('welcome.p1') }}
                 </a>
-                <a href="#features" class="bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all py-3 px-8 rounded-lg text-xl">
+                <a href="#sitios" class="bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all py-3 px-8 rounded-lg text-xl">
                 {{ __('welcome.p2') }}
                 </a>
             </div>
@@ -200,11 +200,11 @@
     </div>
 
     <!-- Carrusel de webs mejorado -->
-    <section class="mt-24 mb-24">
-        <h2 class="text-3xl font-semibold text-center text-white mb-8">SITIOS CREADOS CON ZABLO</h2>
+    <section id="sitios" class="mt-24 mb-24">
+        <h2 class="text-3xl font-semibold text-center text-white mb-8">{{ __('welcome.sitios') }}</h2>
         
         <div class="border-4 border-white rounded-lg p-6 overflow-hidden h-72 relative bg-black/30 backdrop-blur-sm shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-            <div id="web-carousel" class="flex flex-col animate-scroll">
+            <div id="web-carousel" class="flex flex-col"> <!--animate-scroll => Esto provocaba el error (parte inferior negra)-->
                 @foreach($webs as $web)
                     <a href="http://{{ $web->url }}" target="_blank" 
                     class="text-white hover:text-blue-300 transition-colors mb-6 text-center block w-full" 
@@ -213,13 +213,13 @@
                     </a>
                 @endforeach
                 
-                @foreach($webs as $web)
+                <!-- @foreach($webs as $web)
                     <a href="http://{{ $web->url }}" target="_blank" 
                     class="text-white hover:text-blue-300 transition-colors mb-6 text-center block w-full" 
                     style="text-shadow: 0 0 10px rgba(255,255,255,0.5);">
                         {{ $web->url }}
                     </a>
-                @endforeach
+                @endforeach -->
             </div>
         </div>
     </section> 
@@ -259,93 +259,69 @@
         </div>
     </section>
 
-    <!-- Sección de Testimonios con fotos más realistas -->
-    <section class="mb-24">
-        <h2 class="text-4xl font-semibold text-center text-white mb-12">{{ __('welcome.opiniones') }}</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white/10 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-white/20 relative hover:transform hover:scale-105 transition-all">
-                <div class="absolute -top-6 -left-6">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos Mendoza" class="rounded-full w-20 h-20 object-cover border-4 border-blue-600">
-                </div>
-                <div class="pt-12">
-                    <p class="text-white/90 italic mb-6">{{ __('welcome.op1') }}</p>
-                    <h4 class="font-semibold text-white text-xl">Carlos Mendoza</h4>
-                    <p class="text-blue-400">{{ __('welcome.op1a') }}</p>
-                    <div class="flex mt-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                    </div>
-                </div>
+   <!-- Sección de Testimonios con fotos locales -->
+<section class="mb-24">
+    <h2 class="text-4xl font-semibold text-center text-white mb-12">{{ __('welcome.opiniones') }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white/10 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-white/20 relative hover:transform hover:scale-105 transition-all">
+            <div class="absolute -top-6 -left-6">
+                <img src="{{ asset('images/profiles/avatar-hombre-1.jpg') }}" 
+                     alt="Carlos Mendoza" 
+                     class="rounded-full w-20 h-20 object-cover border-4 border-blue-600"
+                     onerror="this.onerror=null; this.src='{{ asset('images/profiles/default-avatar.jpg') }}'; if(!this.src.includes('default-avatar.jpg')) this.parentNode.innerHTML='<div class=\'rounded-full w-20 h-20 bg-blue-500 text-white border-4 border-blue-600 flex items-center justify-center text-2xl font-bold\'>C</div>';">
             </div>
-            <div class="bg-white/10 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-white/20 relative hover:transform hover:scale-105 transition-all">
-                <div class="absolute -top-6 -left-6">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Laura Jiménez" class="rounded-full w-20 h-20 object-cover border-4 border-blue-600">
-                </div>
-                <div class="pt-12">
-                    <p class="text-white/90 italic mb-6">{{ __('welcome.op2') }}</p>
-                    <h4 class="font-semibold text-white text-xl">Laura Jiménez</h4>
-                    <p class="text-blue-400">{{ __('welcome.op2a') }}</p>
-                    <div class="flex mt-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-white/20 relative hover:transform hover:scale-105 transition-all">
-                <div class="absolute -top-6 -left-6">
-                    <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Andrés Salgado" class="rounded-full w-20 h-20 object-cover border-4 border-blue-600">
-                </div>
-                <div class="pt-12">
-                    <p class="text-white/90 italic mb-6">{{ __('welcome.op3') }}</p>
-                    <h4 class="font-semibold text-white text-xl">Andrés Salgado</h4>
-                    <p class="text-blue-400">{{ __('welcome.op3a') }}</p>
-                    <div class="flex mt-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                    </div>
+            <div class="pt-12">
+                <p class="text-white/90 italic mb-6">{{ __('welcome.op1') }}</p>
+                <h4 class="font-semibold text-white text-xl">Carlos Mendoza</h4>
+                <p class="text-blue-400">{{ __('welcome.op1a') }}</p>
+                <!-- Estrellas de valoración -->
+                <div class="flex mt-2">
+                    <!-- Las estrellas se mantienen igual -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <!-- Repite para las otras 4 estrellas -->
                 </div>
             </div>
         </div>
-    </section>
+        
+        <div class="bg-white/10 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-white/20 relative hover:transform hover:scale-105 transition-all">
+            <div class="absolute -top-6 -left-6">
+                <img src="{{ asset('images/profiles/avatar-mujer-1.jpg') }}" 
+                     alt="Laura Jiménez" 
+                     class="rounded-full w-20 h-20 object-cover border-4 border-blue-600"
+                     onerror="this.onerror=null; this.src='{{ asset('images/profiles/default-avatar.jpg') }}'; if(!this.src.includes('default-avatar.jpg')) this.parentNode.innerHTML='<div class=\'rounded-full w-20 h-20 bg-purple-500 text-white border-4 border-blue-600 flex items-center justify-center text-2xl font-bold\'>L</div>';">
+            </div>
+            <div class="pt-12">
+                <p class="text-white/90 italic mb-6">{{ __('welcome.op2') }}</p>
+                <h4 class="font-semibold text-white text-xl">Laura Jiménez</h4>
+                <p class="text-blue-400">{{ __('welcome.op2a') }}</p>
+                <!-- Estrellas de valoración -->
+                <div class="flex mt-2">
+                    <!-- Las estrellas se mantienen igual -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white/10 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-white/20 relative hover:transform hover:scale-105 transition-all">
+            <div class="absolute -top-6 -left-6">
+                <img src="{{ asset('images/profiles/avatar-hombre-2.jpg') }}" 
+                     alt="Andrés Salgado" 
+                     class="rounded-full w-20 h-20 object-cover border-4 border-blue-600"
+                     onerror="this.onerror=null; this.src='{{ asset('images/profiles/default-avatar.jpg') }}'; if(!this.src.includes('default-avatar.jpg')) this.parentNode.innerHTML='<div class=\'rounded-full w-20 h-20 bg-green-500 text-white border-4 border-blue-600 flex items-center justify-center text-2xl font-bold\'>A</div>';">
+            </div>
+            <div class="pt-12">
+                <p class="text-white/90 italic mb-6">{{ __('welcome.op3') }}</p>
+                <h4 class="font-semibold text-white text-xl">Andrés Salgado</h4>
+                <p class="text-blue-400">{{ __('welcome.op3a') }}</p>
+                <!-- Estrellas de valoración -->
+                <div class="flex mt-2">
+                    <!-- Las estrellas se mantienen igual -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
     <!-- Llamada a la acción mejorada -->
     <section id="cta" class="mb-16 text-center py-16 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">

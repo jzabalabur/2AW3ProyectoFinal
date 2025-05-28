@@ -4,7 +4,7 @@
 
 @section('content_header')
     <h1>{{ __('dashboard.webs') }}</h1>
-    {{ Breadcrumbs::render('webs') }}
+    {{ Breadcrumbs::render('admin.webs') }}
 @stop
 
 @section('content')

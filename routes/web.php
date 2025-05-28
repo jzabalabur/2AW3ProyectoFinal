@@ -7,6 +7,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PublicarController;
+use Spatie\Permission\Middleware\RoleMiddleware;
+
+
 
 Route::post('/change-language', function (\Illuminate\Http\Request $request) {
     $request->validate([
@@ -16,14 +20,19 @@ Route::post('/change-language', function (\Illuminate\Http\Request $request) {
     return back()->withCookie(cookie()->forever('language', $request->language));
 })->name('language.change');
 
-
+Route::middleware('auth')->get('/current-user-id', function () {
+    return response()->json(['userId' => auth()->id(), 'authenticated' => true]);
+});
 
 Route::get('/', [WebController::class, 'home'])->name('home');
 
 //Route::get('/dashboard', function () {
 //   return view('dashboard');
 //})->middleware(['auth', 'verified'])->name('dashboard');
-Route::post('/verificar-url', [WebController::class, 'verificarUrl']);
+Route::middleware(['auth'])->group(function () {
+    Route::post('/verificar-dominio', [PublicarController::class, 'checkDomain']);
+    Route::post('/publicar-pagina', [PublicarController::class, 'publish']);
+});
 
 // Perfil y opciones generales autenticadas
 Route::middleware('auth')->group(function () {
@@ -35,19 +44,19 @@ Route::middleware('auth')->group(function () {
 });
 
 //-----INICIO Rutas Admin-----//
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-
+Route::group([
+    'middleware' => ['auth', \Spatie\Permission\Middleware\RoleMiddleware::class.':admin'],
+    'prefix' => 'admin',
+    'as' => 'admin.'
+], function () {
     // Dashboard admin
     Route::get('/', function () {
         return view('admin.dashboard');
     })->name('dashboard');
-
     // Webs (admin)
     Route::resource('webs', WebController::class);
-
     // Usuarios (admin)
     Route::resource('users', UserController::class);
-
     // Pages de cada web (admin)
     Route::resource('webs.pages', PageController::class);
 });
@@ -69,21 +78,27 @@ Route::middleware(['auth'])->group(function () {
 //-----FIN Rutas Cliente-----//
 
 // Ruta para la página de diseño
-Route::get('/diseno', function () {
-    return view('cliente.diseno'); 
-})->name('diseno');
-Route::get('/diseno-bienvenida', function () {
-    return view('cliente.bienvenida'); 
-})->name('bienvenida');
-Route::get('/diseno-principal', function () {
-    return view('cliente.principal'); 
-})->name('principal');
-Route::get('/diseno-contacto', function () {
-    return view('cliente.contacto'); 
-})->name('contacto');
-Route::get('/diseno-publicar', function () {
-    return view('cliente.publicar'); 
-})->name('publicar');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/diseno', function () {
+        return view('cliente.diseno'); 
+    })->name('diseno');
+    
+    Route::get('/diseno-bienvenida', function () {
+        return view('cliente.bienvenida'); 
+    })->name('bienvenida');
+    
+    Route::get('/diseno-principal', function () {
+        return view('cliente.principal'); 
+    })->name('principal');
+    
+    Route::get('/diseno-contacto', function () {
+        return view('cliente.contacto'); 
+    })->name('contacto');
+    
+    Route::get('/diseno-publicar', function () {
+        return view('cliente.publicar'); 
+    })->name('publicar');
+});
 //-----FIN Rutas Cliente-----//
 
 

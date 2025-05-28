@@ -8,6 +8,7 @@ return [
                 Sin complicaciones, sin códigos.',
     'p1' => 'Empieza ahora',  
     'p2' => 'Ver demos',
+    'sitios'=> 'SITIOS CREADOS POR ZABLO',
     'why' => '¿POR QUÉ ELEGIR ZABLO?',
     'c1' => 'Rápido y sencillo',
     'c1a' => 'Una interfaz intuitiva para crear tu página web sin complicaciones en cuestión de minutos.',

@@ -16,25 +16,25 @@
                 <div class="progress" style="width: 20%;"></div>
             </div>
             <div class="progress-steps">
-                <div class="progress-step active">Inicio</div>
-                <div class="progress-step">Bienvenida</div>
-                <div class="progress-step">Principal</div>
-                <div class="progress-step">Contacto</div>
-                <div class="progress-step">Publicar</div>
+                <div class="progress-step completed">{{ __('diseno.inicio') }}</div>
+                <div class="progress-step">{{ __('diseno.bienvenida') }}</div> <!-- Eliminado "active" para que no se vea como un link -->
+                <div class="progress-step">{{ __('diseno.principal') }}</div>
+                <div class="progress-step">{{ __('diseno.contacto') }}</div>
+                <div class="progress-step">{{ __('diseno.publicar') }}</div>
             </div>
         </div>
-        <h3>Configura tu página</h3>
-        <p>Nuestro diseñador incluye una página principal donde promocionar tu negocio, tus habilidades o el mensaje que tú decidas. Además, tienes la opción de incluir un mensaje de bienvenida y una página de contacto.</p>
+        <h3>{{ __('diseno.configura_tu_pagina') }}</h3>
+        <p>{{ __('diseno.descripcion') }}</p>
 
         <label>
-            <input type="checkbox" id="welcome-message"> Incluir mensaje de bienvenida
+            <input type="checkbox" id="welcome-message"> {{ __('diseno.incluir_mensaje_bienvenida') }}
         </label>
         <br>
         <label>
-            <input type="checkbox" id="contact-page"> Incluir página de contacto
+            <input type="checkbox" id="contact-page"> {{ __('diseno.incluir_pagina_contacto') }}
         </label>
         <br>
-        <button id="continuar">Continuar</button>
+        <button id="continuar">{{ __('diseno.continuar') }}</button>
     </div>
 </main>
 @stop

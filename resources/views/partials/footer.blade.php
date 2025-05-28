@@ -1,4 +1,4 @@
-<footer class="bg-black py-4 foot">
+<footer class="bg-black py-4">
     <div class="container mx-auto px-6 text-center">
         <!-- Logo -->
         <div class="flex justify-center">
@@ -13,3 +13,4 @@
     </p>
     </div>
 </footer>
+

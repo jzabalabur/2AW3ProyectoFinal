@@ -6,6 +6,7 @@
     <title>@yield('title', 'Mi Aplicación')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('images/logo_sinFondo_simbolo.png') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- Cargar el CSS común para todas las páginas -->
     @vite(['resources/css/app.css', 'resources/css/cliente.css', 'resources/css/welcome.css'])

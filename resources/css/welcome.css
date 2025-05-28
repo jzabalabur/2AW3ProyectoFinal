@@ -4,6 +4,14 @@ body {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     font-family: 'Barlow Condensed', sans-serif;
 }*/
+body {
+    font-family: 'Oswald', sans-serif !important;
+  }
+  
+
+.title-message, .welcome-message, .bg-blue-600, .bg-transparent {
+    font-family: 'Oswald', 'Arial Narrow', sans-serif ;
+}
 
 /* Animación del carrusel */
 @keyframes scroll {
@@ -22,13 +30,13 @@ body {
 
 /* Estilos del carrusel */
 #web-carousel {
-    font-family: 'Barlow Condensed', sans-serif !important;
+    font-family: 'Oswald', 'Arial Narrow', sans-serif ;
     font-size: 4.5rem;
     line-height: 1.2;
     font-weight: 700;
     letter-spacing: -0.025em;
     overflow: hidden;
-    height: 100%; /* o una altura fija si lo prefieres */
+    height: 100%;
     position: relative;
 }
 
@@ -41,7 +49,7 @@ body {
 }
 #web-carousel a {
     display: block;
-    font-family: inherit !important;
+    font-family: inherit ;
     font-size: 4.5rem;
     line-height: 1.2;
     background-color: transparent;
@@ -64,8 +72,8 @@ body {
 
 /* Títulos y textos */
 .title-message {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 5.5rem !important;
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    font-size: 5.5rem ;
     line-height: 1;
     color: white;
     font-weight: 700;
@@ -76,8 +84,8 @@ body {
 }
 
 .welcome-message {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 2.5rem !important;
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    font-size: 2.5rem ;
     line-height: 1.2;
     color: rgba(255, 255, 255, 0.9);
     margin-bottom: 1.5rem;
@@ -159,11 +167,11 @@ a.bg-transparent:hover {
 /* Media queries para responsividad */
 @media (max-width: 768px) {
     .title-message {
-        font-size: 4rem !important;
+        font-size: 4rem ;
     }
     
     .welcome-message {
-        font-size: 2rem !important;
+        font-size: 2rem ;
     }
     
     #web-carousel a {
@@ -174,11 +182,11 @@ a.bg-transparent:hover {
 
 @media (max-width: 640px) {
     .title-message {
-        font-size: 3.5rem !important;
+        font-size: 3.5rem ;
     }
     
     .welcome-message {
-        font-size: 1.8rem !important;
+        font-size: 1.8rem ;
     }
     
     #web-carousel a {
@@ -187,6 +195,7 @@ a.bg-transparent:hover {
     }
 }
 
+/* 
 @font-face {
   font-family: 'Barlow Condensed';
   font-weight: 400;
@@ -201,4 +210,5 @@ a.bg-transparent:hover {
   font-family: 'Barlow Condensed';
   font-weight: 700;
   src: url('/fonts/barlow-condensed/barlow-condensed-700.woff2') format('woff2');
-}
+} */
+ 

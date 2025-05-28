@@ -1,0 +1,25 @@
+<?php
+return [
+    // Progreso
+    'inicio' => 'Inicio',
+    'bienvenida' => 'Bienvenida',
+    'principal' => 'Principal',
+    'contacto' => 'Contacto',
+    'publicar' => 'Publicar',
+    'pagina_diseno_titulo' => 'Página de Diseño - Zablo',
+    'vista_previa' => 'Vista Previa',
+    'diseno_contacto' => 'Diseñar página de contacto',
+    'informacion_contacto' => 'Información de Contacto',
+    'selecciona_informacion' => 'Selecciona qué información mostrar:',
+    'mapa_ubicacion' => 'Mapa de Ubicación',
+    'mostrar_mapa' => 'Mostrar mapa de ubicación',
+    'direccion_mapa' => 'Dirección para el mapa:',
+    'placeholder_direccion' => 'Ej: Calle Principal 123, Ciudad',
+    'empezar_de_cero' => 'Empezar de cero',
+    'continuar' => 'Continuar',
+    'seguro_reset' => '¿Estás seguro?',
+    'mensaje_reset' => 'Esta acción borrará todo tu diseño actual. ¿Deseas continuar?',
+    'cancelar' => 'Cancelar',
+    'borrar_todo' => 'Borrar todo',
+    'enviar_mensaje' => 'Enviar Mensaje',
+];

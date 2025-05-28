@@ -9,7 +9,7 @@ class Page extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'content', 'web_id'];
+    protected $fillable = ['type', 'web_id', 'settings'];
 
     public function web()
     {

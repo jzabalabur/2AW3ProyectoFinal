@@ -3,7 +3,7 @@
 @section('title', 'Lista de Usuarios - ZabloAdmin')
 
 @section('content_header')
-    {{ Breadcrumbs::render('usuarios') }}
+    {{ Breadcrumbs::render('admin.usuarios') }}
 @stop
 
 @section('content')
