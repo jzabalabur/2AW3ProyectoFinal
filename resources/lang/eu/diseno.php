@@ -11,4 +11,7 @@ return [
     'incluir_mensaje_bienvenida' => 'Sartu ongietorri-mezua',
     'incluir_pagina_contacto' => 'Sartu harremanetarako orria',
     'continuar' => 'Jarraituko',
+    'nombre_web' => 'Zure webaren izena:',
+    'placeholder_nombre' => 'Adib: Nire negozioa, Blog pertsonala, Denda online...',
+    'ayuda_nombre' => 'Hau izango da zure profilean agertuko den izena web hau identifikatzeko.',
 ];

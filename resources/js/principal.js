@@ -17,7 +17,6 @@ const footerBgColorInput = document.getElementById('footer-bg-color');
 const textColorInput = document.getElementById('text-color');
 const headerTextColorInput = document.getElementById('header-text-color');
 const footerTextColorInput = document.getElementById('footer-text-color');
-const contactPage = localStorage.getItem('contactPage') === 'true';
 
 // Nuevos elementos para el contenido intermedio
 const contentTypeInput = document.getElementById('content-type');
@@ -132,11 +131,6 @@ function getImageFromDB(id) {
     });
 }
 
-// Función para obtener la extensión de un archivo
-function getFileExtension(filename) {
-    return filename.split('.').pop();
-}
-
 // Función para resetear el formulario
 function resetForm() {
     bgColorInput.value = '#ffffff';
@@ -211,7 +205,7 @@ function getIconSvg(iconName) {
 
 // Función para actualizar la vista previa
 function updatePreview() {
-    // Crear la estructura base
+    // [Mantener toda la función updatePreview tal como está - no cambiar nada]
     const newPage = document.createElement('div');
     newPage.style.display = 'flex';
     newPage.style.flexDirection = 'column';
@@ -235,13 +229,11 @@ function updatePreview() {
     headerContainer.style.width = '100%';
 
     if (logoPositionInput.value === 'left') {
-        // Logo a la izquierda, texto a la derecha
         headerContainer.style.flexDirection = 'row';
         headerContainer.style.justifyContent = 'space-between';
         previewHeader.style.paddingLeft = '30px';
         previewHeader.style.paddingRight = '30px';
     } else {
-        // Logo y texto centrados (en columna)
         headerContainer.style.flexDirection = 'column';
         headerContainer.style.justifyContent = 'center';
         headerContainer.style.alignItems = 'center';
@@ -279,7 +271,7 @@ function updatePreview() {
     previewHeader.appendChild(headerContainer);
     newPage.appendChild(previewHeader);
 
-    // Verificar si hay página de contacto y añadir navbar con botones
+    // Verificar si hay página de contacto y añadir navbar
     const contactPage = localStorage.getItem('contactPage') === 'true';
     if (contactPage) {
         const navBar = document.createElement('nav');
@@ -301,14 +293,6 @@ function updatePreview() {
         homeButton.style.fontSize = "12px";
         homeButton.style.borderRadius = '4px';
         homeButton.style.transition = 'background-color 0.3s ease';
-        
-        homeButton.addEventListener('mouseover', () => {
-            homeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-        });
-        
-        homeButton.addEventListener('mouseout', () => {
-            homeButton.style.backgroundColor = 'transparent';
-        });
 
         const contactButton = document.createElement('button');
         contactButton.textContent = 'Contacto';
@@ -321,14 +305,6 @@ function updatePreview() {
         contactButton.style.fontSize = "12px";
         contactButton.style.borderRadius = '4px';
         contactButton.style.transition = 'background-color 0.3s ease';
-        
-        contactButton.addEventListener('mouseover', () => {
-            contactButton.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-        });
-        
-        contactButton.addEventListener('mouseout', () => {
-            contactButton.style.backgroundColor = 'transparent';
-        });
 
         navBar.appendChild(homeButton);
         navBar.appendChild(contactButton);
@@ -387,7 +363,7 @@ function updatePreview() {
         mainContent.appendChild(description);
     }
 
-    // Contenido intermedio seleccionado
+    // Contenido intermedio
     const selectedContentType = contentTypeInput.value;
     
     if (selectedContentType !== 'none') {
@@ -396,7 +372,6 @@ function updatePreview() {
         contentContainer.style.padding = '0 20px';
         
         if (selectedContentType === 'feature-module') {
-            // Crear módulo destacable
             const featureModule = document.createElement('div');
             featureModule.style.display = 'flex';
             featureModule.style.justifyContent = 'space-between';
@@ -406,7 +381,6 @@ function updatePreview() {
             featureModule.style.borderRadius = '8px';
             featureModule.style.flexWrap = 'nowrap';
             
-            // Añadir las tres columnas siempre
             for (let i = 0; i < 3; i++) {
                 const col = document.querySelectorAll('.feature-column')[i];
                 const icon = col?.querySelector('.icon-select').value || 'star';
@@ -437,7 +411,6 @@ function updatePreview() {
             contentContainer.appendChild(featureModule);
             
         } else if (selectedContentType === 'video') {
-            // Crear reproductor de vídeo
             const videoUrl = videoUrlInput.value;
             const videoDesc = videoDescInput.value;
             
@@ -476,7 +449,6 @@ function updatePreview() {
             }
             
         } else if (selectedContentType === 'map') {
-            // Crear mapa
             const mapAddress = mapAddressInput.value;
             const mapDesc = mapDescInput.value;
             
@@ -531,7 +503,7 @@ function updatePreview() {
     preview.appendChild(newPage);
 }
 
-// Función para aclarar un color (usada para el navbar)
+// Función para aclarar un color
 function lightenColor(color, percent) {
     const num = parseInt(color.replace('#', ''), 16);
     const amt = Math.round(2.55 * percent);
@@ -547,13 +519,368 @@ function lightenColor(color, percent) {
     ).toString(16).slice(1)}`;
 }
 
+// Función para mostrar mensaje de éxito
+function showSuccessMessage(message = 'Cambios guardados correctamente') {
+    let modal = document.getElementById('success-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'success-modal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <h3 class="modal-title">✅ Éxito</h3>
+                <p class="modal-message">${message}</p>
+                <div class="modal-actions">
+                    <button id="close-success-modal" class="modal-button confirm">Aceptar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        document.getElementById('close-success-modal').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    } else {
+        modal.querySelector('.modal-message').textContent = message;
+    }
+    
+    modal.style.display = 'flex';
+    setTimeout(() => modal.style.display = 'none', 3000);
+}
+
+// Función para guardar datos de página principal via AJAX
+function saveMainPageData() {
+    return new Promise((resolve, reject) => {
+        if (!window.webData || !window.webData.isEditing) {
+            console.error('No se detectó modo edición');
+            reject('No se detectó modo edición');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+        
+        // Recopilar datos del formulario
+        formData.append('header_text', headerTextInput.value);
+        formData.append('header_bg_color', headerBgColorInput.value);
+        formData.append('header_text_color', headerTextColorInput.value);
+        formData.append('bg_color', bgColorInput.value);
+        formData.append('text_color', textColorInput.value);
+        formData.append('font_family', fontFamilyInput.value);
+        formData.append('logo_position', logoPositionInput.value);
+        formData.append('photo_title', photoTitleInput.value);
+        formData.append('photo_description', photoDescriptionInput.value);
+        formData.append('photo_description_align', descriptionAlignInput.value);
+        formData.append('footer_text', footerTextInput.value);
+        formData.append('footer_bg_color', footerBgColorInput.value);
+        formData.append('footer_text_color', footerTextColorInput.value);
+        formData.append('content_type', contentTypeInput.value);
+        
+        if (contentTypeInput.value === 'feature-module') {
+            const columns = Array.from(document.querySelectorAll('.feature-column')).map(col => ({
+                icon: col.querySelector('.icon-select').value,
+                text: col.querySelector('.feature-text').value
+            }));
+            formData.append('feature_module_columns', JSON.stringify(columns));
+        } else if (contentTypeInput.value === 'video') {
+            formData.append('video_url', videoUrlInput.value);
+            formData.append('video_description', videoDescInput.value);
+        } else if (contentTypeInput.value === 'map') {
+            formData.append('map_address', mapAddressInput.value);
+            formData.append('map_description', mapDescInput.value);
+        }
+        
+        // Añadir archivos
+        if (logoInput.files[0]) {
+            formData.append('logo', logoInput.files[0]);
+        }
+        if (mainPhotoInput.files[0]) {
+            formData.append('main_photo', mainPhotoInput.files[0]);
+        }
+        
+        fetch(window.webData.updateUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage(data.message || 'Página principal guardada correctamente');
+                resolve(data);
+            } else {
+                alert('Error al guardar: ' + (data.message || 'Inténtalo de nuevo'));
+                reject(data.message || 'Error al guardar');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al guardar los cambios');
+            reject(error);
+        });
+    });
+}
+
+
+
+// Función para cargar datos existentes
+function loadExistingData(data) {
+    if (!data) {
+        console.log('❌ No hay datos para cargar en página principal');
+        return;
+    }
+    
+    console.log('📥 Iniciando carga de datos existentes de página principal:', data);
+    
+    // Cargar datos del header - manejar ambos formatos
+    const headerText = data.header_text || (data.header && data.header.text);
+    if (headerText && headerTextInput) {
+        console.log('✅ Cargando header_text:', headerText);
+        headerTextInput.value = headerText;
+    } else {
+        console.log('⚠️ header_text no encontrado. data.header_text:', data.header_text, 'data.header?.text:', data.header?.text);
+    }
+    
+    const headerBgColor = data.header_bg_color || (data.header && data.header.bgColor);
+    if (headerBgColor && headerBgColorInput) {
+        console.log('✅ Cargando header_bg_color:', headerBgColor);
+        headerBgColorInput.value = headerBgColor;
+    } else {
+        console.log('⚠️ header_bg_color no encontrado. data.header_bg_color:', data.header_bg_color, 'data.header?.bgColor:', data.header?.bgColor);
+    }
+    
+    const headerTextColor = data.header_text_color || (data.header && data.header.textColor);
+    if (headerTextColor && headerTextColorInput) {
+        console.log('✅ Cargando header_text_color:', headerTextColor);
+        headerTextColorInput.value = headerTextColor;
+    } else {
+        console.log('⚠️ header_text_color no encontrado. data.header_text_color:', data.header_text_color, 'data.header?.textColor:', data.header?.textColor);
+    }
+    
+    // Cargar datos del cuerpo principal - manejar ambos formatos
+    const bgColor = data.bg_color || data.bgColor;
+    if (bgColor && bgColorInput) {
+        console.log('✅ Cargando bg_color:', bgColor);
+        bgColorInput.value = bgColor;
+    } else {
+        console.log('⚠️ bg_color no encontrado. data.bg_color:', data.bg_color, 'data.bgColor:', data.bgColor);
+    }
+    
+    const textColor = data.text_color || data.textColor;
+    if (textColor && textColorInput) {
+        console.log('✅ Cargando text_color:', textColor);
+        textColorInput.value = textColor;
+    } else {
+        console.log('⚠️ text_color no encontrado. data.text_color:', data.text_color, 'data.textColor:', data.textColor);
+    }
+    
+    const fontFamily = data.font_family || data.fontFamily;
+    if (fontFamily && fontFamilyInput) {
+        console.log('✅ Cargando font_family:', fontFamily);
+        fontFamilyInput.value = fontFamily;
+    } else {
+        console.log('⚠️ font_family no encontrado. data.font_family:', data.font_family, 'data.fontFamily:', data.fontFamily);
+    }
+    
+    // Cargar posición del logo - manejar ambos formatos
+    const logoPosition = data.logo_position || (data.logo && data.logo.position);
+    if (logoPosition && logoPositionInput) {
+        console.log('✅ Cargando logo_position:', logoPosition);
+        logoPositionInput.value = logoPosition;
+    } else {
+        console.log('⚠️ logo_position no encontrado. data.logo_position:', data.logo_position, 'data.logo?.position:', data.logo?.position);
+    }
+    
+    // Cargar datos de la foto principal - manejar ambos formatos
+    const photoTitle = data.photo_title || (data.photoContent && data.photoContent.title);
+    if (photoTitle && photoTitleInput) {
+        console.log('✅ Cargando photo_title:', photoTitle);
+        photoTitleInput.value = photoTitle;
+    } else {
+        console.log('⚠️ photo_title no encontrado. data.photo_title:', data.photo_title, 'data.photoContent?.title:', data.photoContent?.title);
+    }
+    
+    const photoDescription = data.photo_description || (data.photoContent && data.photoContent.description);
+    if (photoDescription && photoDescriptionInput) {
+        console.log('✅ Cargando photo_description:', photoDescription);
+        photoDescriptionInput.value = photoDescription;
+    } else {
+        console.log('⚠️ photo_description no encontrado. data.photo_description:', data.photo_description, 'data.photoContent?.description:', data.photoContent?.description);
+    }
+    
+    const photoDescriptionAlign = data.photo_description_align || (data.photoContent && data.photoContent.align);
+    if (photoDescriptionAlign && descriptionAlignInput) {
+        console.log('✅ Cargando photo_description_align:', photoDescriptionAlign);
+        descriptionAlignInput.value = photoDescriptionAlign;
+    } else {
+        console.log('⚠️ photo_description_align no encontrado. data.photo_description_align:', data.photo_description_align, 'data.photoContent?.align:', data.photoContent?.align);
+    }
+    
+    // Cargar datos del footer - manejar ambos formatos
+    const footerText = data.footer_text || (data.footer && data.footer.text);
+    if (footerText && footerTextInput) {
+        console.log('✅ Cargando footer_text:', footerText);
+        footerTextInput.value = footerText;
+    } else {
+        console.log('⚠️ footer_text no encontrado. data.footer_text:', data.footer_text, 'data.footer?.text:', data.footer?.text);
+    }
+    
+    const footerBgColor = data.footer_bg_color || (data.footer && data.footer.bgColor);
+    if (footerBgColor && footerBgColorInput) {
+        console.log('✅ Cargando footer_bg_color:', footerBgColor);
+        footerBgColorInput.value = footerBgColor;
+    } else {
+        console.log('⚠️ footer_bg_color no encontrado. data.footer_bg_color:', data.footer_bg_color, 'data.footer?.bgColor:', data.footer?.bgColor);
+    }
+    
+    const footerTextColor = data.footer_text_color || (data.footer && data.footer.textColor);
+    if (footerTextColor && footerTextColorInput) {
+        console.log('✅ Cargando footer_text_color:', footerTextColor);
+        footerTextColorInput.value = footerTextColor;
+    } else {
+        console.log('⚠️ footer_text_color no encontrado. data.footer_text_color:', data.footer_text_color, 'data.footer?.textColor:', data.footer?.textColor);
+    }
+    
+    // Cargar tipo de contenido - manejar ambos formatos
+    const contentType = data.content_type || data.contentType;
+    if (contentType && contentTypeInput) {
+        console.log('✅ Cargando content_type:', contentType);
+        contentTypeInput.value = contentType;
+        
+        // Mostrar/ocultar opciones según el tipo de contenido
+        document.querySelectorAll('.content-options').forEach(opt => {
+            opt.style.display = 'none';
+        });
+        
+        if (contentType === 'feature-module') {
+            document.getElementById('feature-module-options').style.display = 'block';
+        } else if (contentType === 'video') {
+            document.getElementById('video-options').style.display = 'block';
+        } else if (contentType === 'map') {
+            document.getElementById('map-options').style.display = 'block';
+        }
+    } else {
+        console.log('⚠️ content_type no encontrado. data.content_type:', data.content_type, 'data.contentType:', data.contentType);
+    }
+    
+    // Cargar datos del módulo destacable - manejar ambos formatos
+    const featureModuleColumns = data.feature_module_columns || (data.featureModule && data.featureModule.columns);
+    if (featureModuleColumns) {
+        console.log('✅ Cargando feature_module_columns:', featureModuleColumns);
+        const columns = typeof featureModuleColumns === 'string' 
+            ? JSON.parse(featureModuleColumns) 
+            : featureModuleColumns;
+            
+        columns.forEach((col, index) => {
+            const columnElement = document.querySelectorAll('.feature-column')[index];
+            if (columnElement) {
+                const iconSelect = columnElement.querySelector('.icon-select');
+                const textInput = columnElement.querySelector('.feature-text');
+                if (iconSelect) {
+                    console.log(`✅ Cargando icono columna ${index + 1}:`, col.icon);
+                    iconSelect.value = col.icon || 'star';
+                }
+                if (textInput) {
+                    console.log(`✅ Cargando texto columna ${index + 1}:`, col.text);
+                    textInput.value = col.text || '';
+                }
+            }
+        });
+    } else {
+        console.log('⚠️ feature_module_columns no encontrado. data.feature_module_columns:', data.feature_module_columns, 'data.featureModule?.columns:', data.featureModule?.columns);
+    }
+    
+    // Cargar datos del video - manejar ambos formatos
+    const videoUrl = data.video_url || (data.video && data.video.url);
+    if (videoUrl && videoUrlInput) {
+        console.log('✅ Cargando video_url:', videoUrl);
+        videoUrlInput.value = videoUrl;
+    } else {
+        console.log('⚠️ video_url no encontrado. data.video_url:', data.video_url, 'data.video?.url:', data.video?.url);
+    }
+    
+    const videoDescription = data.video_description || (data.video && data.video.description);
+    if (videoDescription && videoDescInput) {
+        console.log('✅ Cargando video_description:', videoDescription);
+        videoDescInput.value = videoDescription;
+    } else {
+        console.log('⚠️ video_description no encontrado. data.video_description:', data.video_description, 'data.video?.description:', data.video?.description);
+    }
+    
+    // Cargar datos del mapa - manejar ambos formatos
+    const mapAddress = data.map_address || (data.map && data.map.address);
+    if (mapAddress && mapAddressInput) {
+        console.log('✅ Cargando map_address:', mapAddress);
+        mapAddressInput.value = mapAddress;
+    } else {
+        console.log('⚠️ map_address no encontrado. data.map_address:', data.map_address, 'data.map?.address:', data.map?.address);
+    }
+    
+    const mapDescription = data.map_description || (data.map && data.map.description);
+    if (mapDescription && mapDescInput) {
+        console.log('✅ Cargando map_description:', mapDescription);
+        mapDescInput.value = mapDescription;
+    } else {
+        console.log('⚠️ map_description no encontrado. data.map_description:', data.map_description, 'data.map?.description:', data.map?.description);
+    }
+
+    console.log('🖼️ Iniciando carga de imágenes en página principal...');
+
+    // Cargar archivos de imagen en los inputs (async)
+    loadImagesFromServer(data).then(() => {
+        console.log('✅ Imágenes cargadas completamente en página principal');
+        updatePreview(); // Actualizar preview después de cargar imágenes
+    }).catch(error => {
+        console.error('❌ Error al cargar imágenes en página principal:', error);
+        updatePreview(); // Actualizar preview aunque falle la carga de imágenes
+    });
+
+    console.log('📥 Finalizando carga de datos de página principal - actualizando preview');
+    updatePreview();
+}
+
 // Función para guardar los datos y continuar
 async function saveAndContinue() {
+    // MODO EDICIÓN: Guardar primero, luego navegar
+    if (window.webData && window.webData.isEditing) {
+        console.log("Guardando cambios antes de navegar en modo edición");
+        
+        const continueBtn = document.getElementById('continue-btn');
+        const originalText = continueBtn.textContent;
+        continueBtn.disabled = true;
+        continueBtn.textContent = 'Guardando...';
+        
+        try {
+            await saveMainPageData();
+            
+            continueBtn.textContent = 'Navegando...';
+            setTimeout(() => {
+                if (window.webData.hasContactPage) {
+                    window.location.href = window.webData.editContactUrl;
+                } else {
+                    window.location.href = window.webData.editUrl;
+                }
+            }, 1500);
+        } catch (error) {
+            console.error('Error al guardar:', error);
+            alert('Error al guardar los cambios. Por favor, inténtalo de nuevo.');
+            continueBtn.disabled = false;
+            continueBtn.textContent = originalText;
+        }
+        
+        return;
+    }
+    
+    // MODO CREACIÓN NORMAL
+    if (!window.routes) {
+        console.error('Rutas no configuradas para modo creación');
+        alert('Error de configuración. Contacta al administrador.');
+        return;
+    }
+    
     try {
-        // Abrir la base de datos
         await openDatabase();
         
-        // Guardar las imágenes en IndexedDB
         const logoPromise = logoInput.files[0] ? 
             saveImageToDB('main-logo', logoInput.files[0]) : 
             Promise.resolve(null);
@@ -564,9 +891,7 @@ async function saveAndContinue() {
             
         const [logoData, mainPhotoData] = await Promise.all([logoPromise, mainPhotoPromise]);
         
-        // Crear objeto con los datos del formulario
         const mainPageData = {
-            // Datos básicos
             bgColor: bgColorInput.value,
             logo: logoData ? {
                 id: logoData.id,
@@ -600,8 +925,6 @@ async function saveAndContinue() {
                 textColor: footerTextColorInput.value,
                 padding: '15px'
             },
-            
-            // Contenido intermedio
             contentType: contentTypeInput.value,
             featureModule: contentTypeInput.value === 'feature-module' ? {
                 columns: Array.from(document.querySelectorAll('.feature-column')).map(col => ({
@@ -623,17 +946,14 @@ async function saveAndContinue() {
             } : null
         };
 
-        // Guardar en localStorage
         localStorage.setItem('mainPageData', JSON.stringify(mainPageData));
         
-        // Redirigir a la página de contacto
         setTimeout(() => {
-            const redirectUrl = contactPage
-            ? window.routes.contacto
-            : window.routes.publicar;
-        
-        window.location.href = redirectUrl;
-        }, 550); // 550 ms de margen
+            const contactPage = localStorage.getItem('contactPage') === 'true';
+            const redirectUrl = contactPage ? window.routes.contacto : window.routes.publicar;
+            console.log('Navegando a:', redirectUrl, 'contactPage:', contactPage);
+            window.location.href = redirectUrl;
+        }, 550);
 
     } catch (error) {
         console.error('Error al guardar los datos:', error);
@@ -641,14 +961,308 @@ async function saveAndContinue() {
     }
 }
 
+// Función para cargar datos guardados (modo creación normal)
+async function loadSavedData() {
+    try {
+        await openDatabase();
+        
+        const savedData = localStorage.getItem('mainPageData');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            
+            bgColorInput.value = data.bgColor || '#ffffff';
+            if (data.logo) {
+                logoPositionInput.value = data.logo.position || 'center';
+                
+                if (data.logo.id) {
+                    const logoImage = await getImageFromDB(data.logo.id);
+                    if (logoImage) {
+                        const logoBlob = await fetch(logoImage.data).then(r => r.blob());
+                        const logoFile = new File([logoBlob], logoImage.name, {
+                            type: logoImage.type,
+                            lastModified: logoImage.lastModified
+                        });
+                        
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(logoFile);
+                        logoInput.files = dataTransfer.files;
+                    }
+                }
+            }
+            
+            if (data.header) {
+                headerTextInput.value = data.header.text || '';
+                headerBgColorInput.value = data.header.bgColor || '#f8f8f8';
+                headerTextColorInput.value = data.header.textColor || '#000000';
+            }
+            
+            if (data.mainPhoto && data.mainPhoto.id) {
+                const mainPhotoImage = await getImageFromDB(data.mainPhoto.id);
+                if (mainPhotoImage) {
+                    const mainPhotoBlob = await fetch(mainPhotoImage.data).then(r => r.blob());
+                    const mainPhotoFile = new File([mainPhotoBlob], mainPhotoImage.name, {
+                        type: mainPhotoImage.type,
+                        lastModified: mainPhotoImage.lastModified
+                    });
+                    
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(mainPhotoFile);
+                    mainPhotoInput.files = dataTransfer.files;
+                }
+            }
+            
+            if (data.photoContent) {
+                photoTitleInput.value = data.photoContent.title || '';
+                photoDescriptionInput.value = data.photoContent.description || '';
+                descriptionAlignInput.value = data.photoContent.align || 'justify';
+            }
+            
+            fontFamilyInput.value = data.fontFamily || 'Arial, sans-serif';
+            textColorInput.value = data.textColor || '#000000';
+            
+            if (data.footer) {
+                footerTextInput.value = data.footer.text || '';
+                footerBgColorInput.value = data.footer.bgColor || '#f8f8f8';
+                footerTextColorInput.value = data.footer.textColor || '#000000';
+            }
+            
+            if (data.contentType) {
+                contentTypeInput.value = data.contentType;
+                
+                document.querySelectorAll('.content-options').forEach(opt => {
+                    opt.style.display = 'none';
+                });
+                
+                if (data.contentType === 'feature-module' && data.featureModule) {
+                    featureModuleOptions.style.display = 'block';
+                    data.featureModule.columns.forEach((col, index) => {
+                        const columnElement = document.querySelectorAll('.feature-column')[index];
+                        if (columnElement) {
+                            columnElement.querySelector('.icon-select').value = col.icon || 'star';
+                            columnElement.querySelector('.feature-text').value = col.text || '';
+                        }
+                    });
+                } else if (data.contentType === 'video' && data.video) {
+                    videoOptions.style.display = 'block';
+                    videoUrlInput.value = data.video.url || '';
+                    videoDescInput.value = data.video.description || '';
+                } else if (data.contentType === 'map' && data.map) {
+                    mapOptions.style.display = 'block';
+                    mapAddressInput.value = data.map.address || '';
+                    mapDescInput.value = data.map.description || '';
+                }
+            }
+            
+            updatePreview();
+        }
+    } catch (error) {
+        console.error('Error al cargar los datos guardados:', error);
+    }
+}
+// Función de debug para página principal - ACTUALIZADA
+function debugMainDataLoading() {
+    console.log('=== DEBUG PRINCIPAL: Verificando carga de datos ===');
+    
+    if (window.webData) {
+        console.log('window.webData existe:', window.webData);
+        console.log('Modo edición:', window.webData.isEditing);
+        
+        if (window.webData.isEditing && window.webData.main_page_data) {
+            console.log('Datos de página principal:', window.webData.main_page_data);
+            console.log('📋 TODOS LOS CAMPOS DISPONIBLES:');
+            Object.keys(window.webData.main_page_data).forEach(key => {
+                console.log(`${key}:`, window.webData.main_page_data[key]);
+            });
+
+            // Buscar específicamente campos que contengan "logo", "image", "photo", "file"
+            console.log('🔍 BUSCANDO CAMPOS DE IMÁGENES:');
+            Object.keys(window.webData.main_page_data).forEach(key => {
+                if (key.toLowerCase().includes('logo') || 
+                    key.toLowerCase().includes('image') || 
+                    key.toLowerCase().includes('photo') || 
+                    key.toLowerCase().includes('file') ||
+                    key.toLowerCase().includes('path') ||
+                    key.toLowerCase().includes('url')) {
+                    console.log(`🖼️ CAMPO DE IMAGEN ENCONTRADO - ${key}:`, window.webData.main_page_data[key]);
+                }
+            });
+            // Verificar estructura de datos anidados
+            if (window.webData.main_page_data.header) {
+                console.log('header.text:', window.webData.main_page_data.header.text);
+                console.log('header.bgColor:', window.webData.main_page_data.header.bgColor);
+                console.log('header.textColor:', window.webData.main_page_data.header.textColor);
+            }
+            
+            console.log('header_text:', window.webData.main_page_data.header_text);
+            console.log('bg_color:', window.webData.main_page_data.bg_color);
+            console.log('bgColor:', window.webData.main_page_data.bgColor);
+            console.log('font_family:', window.webData.main_page_data.font_family);
+            console.log('fontFamily:', window.webData.main_page_data.fontFamily);
+            console.log('content_type:', window.webData.main_page_data.content_type);
+            console.log('contentType:', window.webData.main_page_data.contentType);
+            
+            // Verificar paths de imágenes
+            console.log('🖼️ Verificando rutas de imágenes:');
+            console.log('logo_path:', window.webData.main_page_data.logo_path);
+            console.log('main_photo_path:', window.webData.main_page_data.main_photo_path);
+        }
+    } else {
+        console.log('window.webData NO existe');
+    }
+    
+    // Verificar elementos DOM
+    console.log('=== Verificando elementos DOM principales ===');
+    console.log('headerTextInput:', headerTextInput ? 'EXISTE' : 'NO EXISTE');
+    if (headerTextInput) console.log('Valor actual headerText:', headerTextInput.value);
+    
+    console.log('bgColorInput:', bgColorInput ? 'EXISTE' : 'NO EXISTE');
+    if (bgColorInput) console.log('Valor actual bgColor:', bgColorInput.value);
+    
+    console.log('logoInput:', logoInput ? 'EXISTE' : 'NO EXISTE');
+    if (logoInput) console.log('Archivos en logoInput:', logoInput.files.length);
+    
+    console.log('mainPhotoInput:', mainPhotoInput ? 'EXISTE' : 'NO EXISTE');
+    if (mainPhotoInput) console.log('Archivos en mainPhotoInput:', mainPhotoInput.files.length);
+    
+    console.log('=== Fin del debug principal ===');
+}
+// Event listeners principales
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado - inicializando página principal');
+    
+    // Configurar modo edición
+    if (window.webData && window.webData.isEditing) {
+        console.log('Modo edición detectado en página principal');
+        console.log('Datos a cargar:', window.webData.main_page_data);
+        
+        // PRIMERO cargar datos existentes
+        if (window.webData.main_page_data) {
+            loadExistingData(window.webData.main_page_data);
+        }
+        
+        // DESPUÉS ejecutar el debug
+        setTimeout(() => {
+            debugMainDataLoading();
+        }, 300);
+        
+        // Configurar botón guardar
+        const saveBtn = document.getElementById('guardar-cambios');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function() {
+                console.log('Guardando cambios...');
+                saveMainPageData().catch(error => {
+                    console.error('Error al guardar:', error);
+                });
+            });
+        }
+    } else {
+        // Modo creación normal
+        console.log('Modo creación normal - cargando datos guardados');
+        loadSavedData();
+        
+        // Debug en modo creación también
+        setTimeout(() => {
+            debugMainDataLoading();
+        }, 200);
+    }
+    
+    // Configurar cambios en el tipo de contenido
+    if (contentTypeInput) {
+        contentTypeInput.addEventListener('change', function() {
+            console.log('Cambiando tipo de contenido a:', this.value);
+            document.querySelectorAll('.content-options').forEach(opt => {
+                opt.style.display = 'none';
+            });
+            
+            if (this.value === 'feature-module') {
+                featureModuleOptions.style.display = 'block';
+            } else if (this.value === 'video') {
+                videoOptions.style.display = 'block';
+            } else if (this.value === 'map') {
+                mapOptions.style.display = 'block';
+            }
+            
+            updatePreview();
+        });
+    }
+
+    // Modal de reset
+    const resetButton = document.getElementById('reset-btn');
+    const resetModal = document.getElementById('reset-modal');
+    const cancelReset = document.getElementById('cancel-reset');
+    const confirmReset = document.getElementById('confirm-reset');
+
+    if (resetButton && resetModal) {
+        resetButton.addEventListener('click', () => {
+            resetModal.style.display = 'flex';
+        });
+    }
+
+    if (cancelReset && resetModal) {
+        cancelReset.addEventListener('click', () => {
+            resetModal.style.display = 'none';
+        });
+    }
+
+    if (resetModal) {
+        const modalOverlay = resetModal.querySelector('.modal-overlay');
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', () => {
+                resetModal.style.display = 'none';
+            });
+        }
+    }
+
+    if (confirmReset) {
+        confirmReset.addEventListener('click', () => {
+            resetForm();
+            updatePreview();
+            resetModal.style.display = 'none';
+            alert('El diseño ha sido reiniciado correctamente.');
+        });
+    }
+
+    // Event listener para el botón Continuar
+    const continueBtn = document.getElementById('continue-btn');
+    if (continueBtn) {
+        continueBtn.addEventListener('click', saveAndContinue);
+    }
+
+    // Event listeners para actualizar la vista previa
+    const inputs = [
+        bgColorInput, logoInput, logoPositionInput, headerTextInput,
+        fontFamilyInput, mainPhotoInput, footerTextInput, photoTitleInput,
+        photoDescriptionInput, descriptionAlignInput, headerBgColorInput,
+        footerBgColorInput, textColorInput, headerTextColorInput, footerTextColorInput,
+        contentTypeInput, videoUrlInput, videoDescInput, mapAddressInput, mapDescInput
+    ];
+
+    inputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', updatePreview);
+            input.addEventListener('change', updatePreview);
+        }
+    });
+
+    // Event listeners para los selects de iconos y textos del módulo
+    document.querySelectorAll('.icon-select, .feature-text').forEach(element => {
+        if (element) {
+            element.addEventListener('change', updatePreview);
+            element.addEventListener('input', updatePreview);
+        }
+    });
+
+    // Inicializar vista previa después de cargar todo
+    console.log('Inicializando vista previa...');
+    updatePreview();
+});
+
 // Manejador para mostrar/ocultar opciones según selección
 contentTypeInput.addEventListener('change', function() {
-    // Ocultar todas las opciones primero
     document.querySelectorAll('.content-options').forEach(opt => {
         opt.style.display = 'none';
     });
     
-    // Mostrar las opciones seleccionadas
     if (this.value === 'feature-module') {
         featureModuleOptions.style.display = 'block';
     } else if (this.value === 'video') {
@@ -666,12 +1280,10 @@ const resetModal = document.getElementById('reset-modal');
 const cancelReset = document.getElementById('cancel-reset');
 const confirmReset = document.getElementById('confirm-reset');
 
-// Abrir modal
 resetButton.addEventListener('click', () => {
     resetModal.style.display = 'flex';
 });
 
-// Cerrar modal
 cancelReset.addEventListener('click', () => {
     resetModal.style.display = 'none';
 });
@@ -680,7 +1292,6 @@ resetModal.querySelector('.modal-overlay').addEventListener('click', () => {
     resetModal.style.display = 'none';
 });
 
-// Confirmar reset
 confirmReset.addEventListener('click', () => {
     resetForm();
     updatePreview();
@@ -710,121 +1321,105 @@ document.querySelectorAll('.icon-select, .feature-text').forEach(element => {
     element.addEventListener('change', updatePreview);
 });
 
-// Función para cargar datos guardados
-async function loadSavedData() {
+// Función para cargar imágenes desde el servidor en modo edición - PÁGINA PRINCIPAL
+async function loadImagesFromServer(data) {
+    if (!window.webData || !window.webData.isEditing) {
+        return; // Solo en modo edición
+    }
+    
+    console.log('🖼️ Cargando imágenes desde el servidor (página principal)...');
+    console.log('🔍 Buscando campos de imágenes en:', Object.keys(data));
+    
     try {
-        // Abrir la base de datos
-        await openDatabase();
+        // Buscar el logo con diferentes nombres posibles
+        const logoFields = ['logo_path', 'logo_url', 'logo_file', 'logo', 'logoPath', 'logoUrl'];
+        let logoPath = null;
         
-        const savedData = localStorage.getItem('mainPageData');
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            
-            // Cargar datos básicos
-            bgColorInput.value = data.bgColor || '#ffffff';
-            if (data.logo) {
-                logoPositionInput.value = data.logo.position || 'center';
-                
-                // Cargar logo desde IndexedDB si existe
-                if (data.logo.id) {
-                    const logoImage = await getImageFromDB(data.logo.id);
-                    if (logoImage) {
-                        // Crear un objeto File a partir de los datos guardados
-                        const logoBlob = await fetch(logoImage.data).then(r => r.blob());
-                        const logoFile = new File([logoBlob], logoImage.name, {
-                            type: logoImage.type,
-                            lastModified: logoImage.lastModified
-                        });
-                        
-                        // Asignar el archivo al input
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(logoFile);
-                        logoInput.files = dataTransfer.files;
-                    }
-                }
+        for (const field of logoFields) {
+            if (data[field]) {
+                logoPath = data[field];
+                console.log(`📸 Logo encontrado en campo "${field}":`, logoPath);
+                break;
             }
-            
-            if (data.header) {
-                headerTextInput.value = data.header.text || '';
-                headerBgColorInput.value = data.header.bgColor || '#f8f8f8';
-                headerTextColorInput.value = data.header.textColor || '#000000';
-                // Los paddings se aplican automáticamente en updatePreview()
-            }
-            
-            if (data.mainPhoto && data.mainPhoto.id) {
-                // Cargar foto principal desde IndexedDB si existe
-                const mainPhotoImage = await getImageFromDB(data.mainPhoto.id);
-                if (mainPhotoImage) {
-                    // Crear un objeto File a partir de los datos guardados
-                    const mainPhotoBlob = await fetch(mainPhotoImage.data).then(r => r.blob());
-                    const mainPhotoFile = new File([mainPhotoBlob], mainPhotoImage.name, {
-                        type: mainPhotoImage.type,
-                        lastModified: mainPhotoImage.lastModified
-                    });
-                    
-                    // Asignar el archivo al input
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(mainPhotoFile);
-                    mainPhotoInput.files = dataTransfer.files;
-                }
-            }
-            
-            if (data.photoContent) {
-                photoTitleInput.value = data.photoContent.title || '';
-                photoDescriptionInput.value = data.photoContent.description || '';
-                descriptionAlignInput.value = data.photoContent.align || 'justify';
-                // Los paddings y margins se aplican automáticamente en updatePreview()
-            }
-            
-            fontFamilyInput.value = data.fontFamily || 'Arial, sans-serif';
-            textColorInput.value = data.textColor || '#000000';
-            
-            if (data.footer) {
-                footerTextInput.value = data.footer.text || '';
-                footerBgColorInput.value = data.footer.bgColor || '#f8f8f8';
-                footerTextColorInput.value = data.footer.textColor || '#000000';
-                // El padding se aplica automáticamente en updatePreview()
-            }
-            
-            // Cargar contenido intermedio
-            if (data.contentType) {
-                contentTypeInput.value = data.contentType;
-                
-                // Mostrar las opciones correctas
-                document.querySelectorAll('.content-options').forEach(opt => {
-                    opt.style.display = 'none';
-                });
-                
-                if (data.contentType === 'feature-module' && data.featureModule) {
-                    featureModuleOptions.style.display = 'block';
-                    data.featureModule.columns.forEach((col, index) => {
-                        const columnElement = document.querySelectorAll('.feature-column')[index];
-                        if (columnElement) {
-                            columnElement.querySelector('.icon-select').value = col.icon || 'star';
-                            columnElement.querySelector('.feature-text').value = col.text || '';
-                        }
-                    });
-                } else if (data.contentType === 'video' && data.video) {
-                    videoOptions.style.display = 'block';
-                    videoUrlInput.value = data.video.url || '';
-                    videoDescInput.value = data.video.description || '';
-                } else if (data.contentType === 'map' && data.map) {
-                    mapOptions.style.display = 'block';
-                    mapAddressInput.value = data.map.address || '';
-                    mapDescInput.value = data.map.description || '';
-                }
-            }
-            
-            // Actualizar la vista previa
-            updatePreview();
         }
+        
+        // Cargar logo si existe
+        if (logoPath && logoInput) {
+            try {
+                // CORREGIDO: Construir URL correcta
+                const fullLogoPath = logoPath.startsWith('http') ? logoPath : 
+                                   logoPath.startsWith('/') ? logoPath :
+                                   '/storage/' + logoPath;
+                
+                console.log('📸 Cargando logo desde URL completa:', fullLogoPath);
+                
+                const logoResponse = await fetch(fullLogoPath);
+                if (logoResponse.ok) {
+                    const logoBlob = await logoResponse.blob();
+                    const logoFile = new File([logoBlob], 'logo.jpg', { type: logoBlob.type });
+                    
+                    const logoDataTransfer = new DataTransfer();
+                    logoDataTransfer.items.add(logoFile);
+                    logoInput.files = logoDataTransfer.files;
+                    
+                    console.log('✅ Logo cargado correctamente');
+                } else {
+                    console.log('⚠️ No se pudo cargar el logo desde:', fullLogoPath, 'Status:', logoResponse.status);
+                }
+            } catch (error) {
+                console.log('⚠️ Error al cargar logo:', error);
+            }
+        } else {
+            console.log('⚠️ No se encontró ruta de logo o logoInput no existe');
+        }
+        
+        // Buscar la imagen principal con diferentes nombres posibles
+        const photoFields = ['main_photo_path', 'main_photo_url', 'main_photo_file', 'main_photo', 'mainPhotoPath', 'mainPhotoUrl', 'photo_path'];
+        let photoPath = null;
+        
+        for (const field of photoFields) {
+            if (data[field]) {
+                photoPath = data[field];
+                console.log(`📸 Imagen principal encontrada en campo "${field}":`, photoPath);
+                break;
+            }
+        }
+        
+        // Cargar imagen principal si existe
+        if (photoPath && mainPhotoInput) {
+            try {
+                // CORREGIDO: Construir URL correcta
+                const fullPhotoPath = photoPath.startsWith('http') ? photoPath : 
+                                     photoPath.startsWith('/') ? photoPath :
+                                     '/storage/' + photoPath;
+                
+                console.log('📸 Cargando imagen principal desde URL completa:', fullPhotoPath);
+                
+                const photoResponse = await fetch(fullPhotoPath);
+                if (photoResponse.ok) {
+                    const photoBlob = await photoResponse.blob();
+                    const photoFile = new File([photoBlob], 'main-photo.jpg', { type: photoBlob.type });
+                    
+                    const photoDataTransfer = new DataTransfer();
+                    photoDataTransfer.items.add(photoFile);
+                    mainPhotoInput.files = photoDataTransfer.files;
+                    
+                    console.log('✅ Imagen principal cargada correctamente');
+                } else {
+                    console.log('⚠️ No se pudo cargar la imagen principal desde:', fullPhotoPath, 'Status:', photoResponse.status);
+                }
+            } catch (error) {
+                console.log('⚠️ Error al cargar imagen principal:', error);
+            }
+        } else {
+            console.log('⚠️ No se encontró ruta de imagen principal o mainPhotoInput no existe');
+        }
+        
     } catch (error) {
-        console.error('Error al cargar los datos guardados:', error);
+        console.error('❌ Error general al cargar imágenes en página principal:', error);
     }
 }
 
-// Cargar datos al iniciar
-document.addEventListener('DOMContentLoaded', loadSavedData);
 
 // Inicializar vista previa
 updatePreview();

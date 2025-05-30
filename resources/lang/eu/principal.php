@@ -61,5 +61,7 @@ return [
     'cancelar' => 'Ezeztatu',
     'borrar_todo' => 'Denak ezabatu',
     'escribe_titulo' => 'Idatzi izenburua',
+    'texto_descriptivo' => 'Testu deskribatzailea'
+
 
 ];

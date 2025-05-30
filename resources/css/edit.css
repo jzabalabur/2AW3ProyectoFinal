@@ -1,0 +1,30 @@
+.edit-navigation {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #007bff;
+}
+
+.edit-navigation .back-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.current-file {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #007bff;
+}
+
+.save-button {
+    background: #28a745;
+    color: white;
+    margin-left: 1rem;
+}
+

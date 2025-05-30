@@ -27,5 +27,14 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: '0.0.0.0',  // Permite acceso desde cualquier IP
+        port: 5174,
+        cors: true,
+        hmr: {
+            host: '192.168.99.100',  // Tu IP
+            port: 5174
+        }
+    }
 
 });

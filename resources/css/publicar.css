@@ -54,3 +54,56 @@
             font-size: 16px;
             margin-top: 20px;
         }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .secondary-button {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .secondary-button:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+        
+        .secondary-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #publish-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .secondary-button,
+            #publish-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }

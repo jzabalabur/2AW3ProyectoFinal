@@ -23,6 +23,11 @@ const contactCheckboxes = [
 
 // Inicializar opciones de contacto
 function initContactOptions() {
+    if (!contactOptions) {
+        console.error('Elemento contact-options no encontrado');
+        return;
+    }
+    
     contactOptions.innerHTML = '';
     
     contactCheckboxes.forEach(option => {
@@ -63,8 +68,58 @@ function initContactOptions() {
         input.addEventListener('input', updatePreview);
     });
 
-    showMapCheckbox.addEventListener('change', updatePreview);
-    mapAddressInput.addEventListener('input', updatePreview);
+    if (showMapCheckbox) {
+        showMapCheckbox.addEventListener('change', updatePreview);
+    }
+    if (mapAddressInput) {
+        mapAddressInput.addEventListener('input', updatePreview);
+    }
+}
+
+// Funciones de IndexedDB
+function openDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = (event) => {
+            console.error('Error al abrir la base de datos:', event.target.error);
+            reject('Error al abrir la base de datos');
+        };
+        
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            resolve(db);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+        };
+    });
+}
+
+function getImageFromDB(id) {
+    return new Promise((resolve, reject) => {
+        if (!db) {
+            reject('La base de datos no está inicializada');
+            return;
+        }
+        
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.get(id);
+        
+        request.onsuccess = (event) => {
+            resolve(event.target.result);
+        };
+        
+        request.onerror = (event) => {
+            console.error('Error al obtener la imagen:', event.target.error);
+            reject('Error al obtener la imagen');
+        };
+    });
 }
 
 // Función para aclarar un color
@@ -176,14 +231,6 @@ async function updatePreview() {
             homeButton.style.fontSize = "12px";
             homeButton.style.borderRadius = '4px';
             homeButton.style.transition = 'background-color 0.3s ease';
-            
-            homeButton.addEventListener('mouseover', () => {
-                homeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-            });
-            
-            homeButton.addEventListener('mouseout', () => {
-                homeButton.style.backgroundColor = 'transparent';
-            });
 
             const contactButton = document.createElement('button');
             contactButton.textContent = 'Contacto';
@@ -196,14 +243,6 @@ async function updatePreview() {
             contactButton.style.fontSize = "12px";
             contactButton.style.borderRadius = '4px';
             contactButton.style.transition = 'background-color 0.3s ease';
-            
-            contactButton.addEventListener('mouseover', () => {
-                contactButton.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-            });
-            
-            contactButton.addEventListener('mouseout', () => {
-                contactButton.style.backgroundColor = 'transparent';
-            });
 
             navBar.appendChild(homeButton);
             navBar.appendChild(contactButton);
@@ -253,6 +292,9 @@ async function updatePreview() {
         
         if (contactInfoContainer.children.length === 0) {
             const placeholder = document.createElement('p');
+            placeholder.textContent = 'Selecciona y completa la información de contacto';
+            placeholder.style.color = '#666';
+            placeholder.style.fontStyle = 'italic';
             contactInfoContainer.appendChild(placeholder);
         }
         
@@ -260,7 +302,7 @@ async function updatePreview() {
         mainContent.appendChild(contactDataContainer);
         
         // Mapa (debajo de la información de contacto)
-        if (showMapCheckbox.checked && mapAddressInput.value.trim()) {
+        if (showMapCheckbox && showMapCheckbox.checked && mapAddressInput && mapAddressInput.value.trim()) {
             const mapContainer = document.createElement('div');
             mapContainer.style.width = '100%';
             mapContainer.style.maxWidth = '1000px';
@@ -376,14 +418,6 @@ async function updatePreview() {
         submitButton.style.fontWeight = 'bold';
         submitButton.style.transition = 'background-color 0.3s';
         
-        submitButton.addEventListener('mouseover', () => {
-            submitButton.style.backgroundColor = '#2563eb';
-        });
-        
-        submitButton.addEventListener('mouseout', () => {
-            submitButton.style.backgroundColor = '#3b82f6';
-        });
-        
         contactForm.appendChild(submitButton);
         mainContent.appendChild(contactForm);
         newPage.appendChild(mainContent);
@@ -400,44 +434,199 @@ async function updatePreview() {
 
         newPage.appendChild(previewFooter);
 
-        preview.innerHTML = '';
-        preview.appendChild(newPage);
+        if (preview) {
+            preview.innerHTML = '';
+            preview.appendChild(newPage);
+        }
     } catch (error) {
         console.error('Error al actualizar la vista previa:', error);
     }
 }
 
-// Función para guardar los datos de contacto
-function saveContactData() {
-    const contactData = {
-        showMap: showMapCheckbox.checked,
-        mapAddress: mapAddressInput.value.trim(),
-        contactInfo: {}
-    };
-    
-    contactCheckboxes.forEach(option => {
-        const checkbox = document.getElementById(option.id);
-        const input = document.getElementById(`${option.id}-text`);
+// Función para mostrar mensaje de éxito
+function showSuccessMessage(message = 'Cambios guardados correctamente') {
+    let modal = document.getElementById('success-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'success-modal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <h3 class="modal-title">✅ Éxito</h3>
+                <p class="modal-message">${message}</p>
+                <div class="modal-actions">
+                    <button id="close-success-modal" class="modal-button confirm">Aceptar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
         
-        if (checkbox && input) {
-            contactData.contactInfo[option.id] = {
-                selected: checkbox.checked,
-                text: input.value.trim()
-            };
-        }
-    });
+        document.getElementById('close-success-modal').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    } else {
+        modal.querySelector('.modal-message').textContent = message;
+    }
     
-    localStorage.setItem('contactData', JSON.stringify(contactData));
+    modal.style.display = 'flex';
+    setTimeout(() => modal.style.display = 'none', 3000);
 }
 
-// Función para cargar datos de contacto guardados
+// Función para guardar datos de contacto via AJAX
+function saveContactData() {
+    return new Promise((resolve, reject) => {
+        if (!window.webData || !window.webData.isEditing) {
+            // Modo creación normal - guardar en localStorage
+            const contactData = {
+                showMap: showMapCheckbox ? showMapCheckbox.checked : false,
+                mapAddress: mapAddressInput ? mapAddressInput.value.trim() : '',
+                contactInfo: {}
+            };
+            
+            contactCheckboxes.forEach(option => {
+                const checkbox = document.getElementById(option.id);
+                const input = document.getElementById(`${option.id}-text`);
+                
+                if (checkbox && input) {
+                    contactData.contactInfo[option.id] = {
+                        selected: checkbox.checked,
+                        text: input.value.trim()
+                    };
+                }
+            });
+            
+            localStorage.setItem('contactData', JSON.stringify(contactData));
+            resolve(contactData);
+            return;
+        }
+        
+        // Modo edición - guardar via AJAX
+        const formData = new FormData();
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+        
+        formData.append('show_map', showMapCheckbox ? showMapCheckbox.checked : false);
+        formData.append('map_address', mapAddressInput ? mapAddressInput.value.trim() : '');
+        
+        const contactInfo = {};
+        contactCheckboxes.forEach(option => {
+            const checkbox = document.getElementById(option.id);
+            const input = document.getElementById(`${option.id}-text`);
+            
+            if (checkbox && input) {
+                contactInfo[option.id] = {
+                    selected: checkbox.checked,
+                    text: input.value.trim()
+                };
+            }
+        });
+        
+        formData.append('contact_info', JSON.stringify(contactInfo));
+        
+        fetch(window.webData.updateUrl, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage(data.message || 'Página de contacto guardada correctamente');
+                resolve(data);
+            } else {
+                alert('Error al guardar: ' + (data.message || 'Inténtalo de nuevo'));
+                reject(data.message || 'Error al guardar');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al guardar los cambios');
+            reject(error);
+        });
+    });
+}
+
+// Función para cargar datos existentes
+function loadExistingData(data) {
+    if (!data) {
+        console.log('❌ No hay datos de contacto para cargar');
+        return;
+    }
+    
+    console.log('📥 Cargando datos de contacto existentes:', data);
+    
+    // Cargar configuración del mapa - manejar ambos formatos
+    const showMap = data.show_map !== undefined ? data.show_map : data.showMap;
+    if (showMapCheckbox) {
+        console.log('✅ Cargando show_map:', showMap);
+        showMapCheckbox.checked = showMap === true || showMap === 'true' || showMap === 1;
+    } else {
+        console.log('⚠️ showMapCheckbox no encontrado');
+    }
+    
+    const mapAddress = data.map_address || data.mapAddress;
+    if (mapAddressInput) {
+        console.log('✅ Cargando map_address:', mapAddress);
+        mapAddressInput.value = mapAddress || '';
+    } else {
+        console.log('⚠️ mapAddressInput no encontrado');
+    }
+    
+    // Cargar información de contacto - manejar ambos formatos
+    let contactInfo = data.contact_info || data.contactInfo;
+    
+    // Si es string, parsearlo
+    if (typeof contactInfo === 'string') {
+        try {
+            contactInfo = JSON.parse(contactInfo);
+            console.log('✅ ContactInfo parseado desde string:', contactInfo);
+        } catch (e) {
+            console.error('❌ Error al parsear contact_info:', e);
+            contactInfo = {};
+        }
+    }
+    
+    if (contactInfo) {
+        console.log('📋 Cargando información de contacto:', contactInfo);
+        
+        contactCheckboxes.forEach(option => {
+            const checkbox = document.getElementById(option.id);
+            const input = document.getElementById(`${option.id}-text`);
+            
+            if (checkbox && input && contactInfo[option.id]) {
+                const optionData = contactInfo[option.id];
+                
+                // Manejar tanto formato actual como nuevo
+                const isSelected = optionData.selected !== undefined ? optionData.selected : optionData.checked;
+                const textValue = optionData.text !== undefined ? optionData.text : optionData.value;
+                
+                console.log(`✅ Cargando ${option.id}:`, { selected: isSelected, text: textValue });
+                
+                checkbox.checked = isSelected === true || isSelected === 'true' || isSelected === 1;
+                input.value = textValue || '';
+            } else {
+                console.log(`⚠️ Datos no encontrados para ${option.id} o elementos DOM no existen`);
+            }
+        });
+    } else {
+        console.log('⚠️ contact_info no encontrado. data.contact_info:', data.contact_info, 'data.contactInfo:', data.contactInfo);
+    }
+    
+    console.log('📥 Finalizando carga de datos de contacto - actualizando preview');
+    updatePreview();
+}
+
+// Función para cargar datos de contacto guardados (modo creación normal)
 function loadContactData() {
     const savedData = localStorage.getItem('contactData');
     if (savedData) {
         const contactData = JSON.parse(savedData);
         
-        showMapCheckbox.checked = contactData.showMap || false;
-        mapAddressInput.value = contactData.mapAddress || '';
+        if (showMapCheckbox) {
+            showMapCheckbox.checked = contactData.showMap || false;
+        }
+        if (mapAddressInput) {
+            mapAddressInput.value = contactData.mapAddress || '';
+        }
         
         contactCheckboxes.forEach(option => {
             const checkbox = document.getElementById(option.id);
@@ -463,92 +652,119 @@ function resetForm() {
         }
     });
     
-    showMapCheckbox.checked = false;
-    mapAddressInput.value = '';
+    if (showMapCheckbox) showMapCheckbox.checked = false;
+    if (mapAddressInput) mapAddressInput.value = '';
     
-    saveContactData();
     updatePreview();
-    alert('El formulario de contacto ha sido reiniciado correctamente.');
 }
 
 // Función para guardar los datos y continuar
-function saveAndContinue() {
-    saveContactData();
+async function saveAndContinue() {
+    // MODO EDICIÓN: Guardar primero, luego navegar
+    if (window.webData && window.webData.isEditing) {
+        console.log("Guardando cambios antes de navegar en modo edición");
+        
+        const continueBtn = document.getElementById('continue-btn');
+        const originalText = continueBtn.textContent;
+        continueBtn.disabled = true;
+        continueBtn.textContent = 'Guardando...';
+        
+        try {
+            await saveContactData();
+            
+            continueBtn.textContent = 'Navegando...';
+            setTimeout(() => {
+                window.location.href = window.webData.editUrl; // Volver al panel principal
+            }, 1500);
+        } catch (error) {
+            console.error('Error al guardar:', error);
+            alert('Error al guardar los cambios. Por favor, inténtalo de nuevo.');
+            continueBtn.disabled = false;
+            continueBtn.textContent = originalText;
+        }
+        
+        return;
+    }
+    
+    // MODO CREACIÓN NORMAL
+    if (!window.routes || !window.routes.publicar) {
+        console.error('Rutas no configuradas para modo creación');
+        alert('Error de configuración. Contacta al administrador.');
+        return;
+    }
+    
+    await saveContactData();
     setTimeout(() => {
         window.location.href = window.routes.publicar;
-    }, 550); // 550 ms de margen
+    }, 550);
 }
 
-// Configuración de eventos
-resetBtn.addEventListener('click', () => {
-    document.getElementById('reset-modal').style.display = 'flex';
-});
-
-document.getElementById('cancel-reset').addEventListener('click', () => {
-    document.getElementById('reset-modal').style.display = 'none';
-});
-
-document.getElementById('confirm-reset').addEventListener('click', () => {
-    resetForm();
-    document.getElementById('reset-modal').style.display = 'none';
-});
-
-continueBtn.addEventListener('click', saveAndContinue);
-
-// Inicialización
-document.addEventListener('DOMContentLoaded', async () => {
+// Event listeners principales
+document.addEventListener('DOMContentLoaded', async function() {
     try {
         await openDatabase();
         initContactOptions();
-        loadContactData();
+        
+        // Configurar modo edición o creación normal
+        if (window.webData && window.webData.isEditing) {
+            loadExistingData(window.webData.contact_page_data);
+            
+            // Añadir botón guardar si no existe
+            const continueBtn = document.getElementById('continue-btn');
+            if (continueBtn && !document.getElementById('guardar-cambios')) {
+                const saveBtn = document.createElement('button');
+                saveBtn.id = 'guardar-cambios';
+                saveBtn.textContent = 'Guardar Cambios';
+                saveBtn.className = 'primary-button';
+                saveBtn.style.marginLeft = '1rem';
+                saveBtn.addEventListener('click', () => {
+                    saveContactData().catch(error => {
+                        console.error('Error al guardar:', error);
+                    });
+                });
+                continueBtn.parentNode.insertBefore(saveBtn, continueBtn);
+            }
+        } else {
+            loadContactData();
+        }
+        
         await updatePreview();
     } catch (error) {
         console.error('Error al cargar la página:', error);
     }
 });
 
-// Funciones de IndexedDB
-function openDatabase() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        
-        request.onerror = (event) => {
-            console.error('Error al abrir la base de datos:', event.target.error);
-            reject('Error al abrir la base de datos');
-        };
-        
-        request.onsuccess = (event) => {
-            db = event.target.result;
-            resolve(db);
-        };
-        
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-            }
-        };
+// Configuración de eventos
+if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+        const resetModal = document.getElementById('reset-modal');
+        if (resetModal) {
+            resetModal.style.display = 'flex';
+        }
     });
 }
 
-function getImageFromDB(id) {
-    return new Promise((resolve, reject) => {
-        if (!db) {
-            reject('La base de datos no está inicializada');
-            return;
+const cancelReset = document.getElementById('cancel-reset');
+if (cancelReset) {
+    cancelReset.addEventListener('click', () => {
+        const resetModal = document.getElementById('reset-modal');
+        if (resetModal) {
+            resetModal.style.display = 'none';
         }
-        
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        const store = tx.objectStore(STORE_NAME);
-        const request = store.get(id);
-        
-        request.onsuccess = (event) => {
-            resolve(event.target.result);
-        };
-        
-        request.onerror = (event) => {
-            console.error('Error al obtener la imagen:', event.target.error);
-            reject('Error al obtener la imagen');
-        };
     });
+}
+
+const confirmReset = document.getElementById('confirm-reset');
+if (confirmReset) {
+    confirmReset.addEventListener('click', () => {
+        resetForm();
+        const resetModal = document.getElementById('reset-modal');
+        if (resetModal) {
+            resetModal.style.display = 'none';
+        }
+    });
+}
+
+if (continueBtn) {
+    continueBtn.addEventListener('click', saveAndContinue);
 }

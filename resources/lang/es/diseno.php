@@ -11,4 +11,7 @@ return [
     'incluir_mensaje_bienvenida' => 'Incluir mensaje de bienvenida',
     'incluir_pagina_contacto' => 'Incluir página de contacto',
     'continuar' => 'Continuar',
+    'nombre_web' => 'Nombre de tu web:',
+    'placeholder_nombre' => 'Ej: Mi negocio, Blog personal, Tienda online...',
+    'ayuda_nombre' => 'Este será el nombre que aparecerá en tu perfil para identificar esta web.',
 ];

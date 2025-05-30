@@ -27,169 +27,265 @@ class PublicarController extends Controller
     
     public function publish(Request $request)
     {
-
         // Validar el dominio
         $request->validate([
             'url' => 'required|unique:webs,url|regex:/^(?!:\/\/)([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,11}?$/'
         ]);
-
-    try {
-        $data = $request->all();
-        $domain = $request->input('url');
-        $user_id = $request->input('user_id');
-        $webPath = public_path('webs/' . $domain);
-        $name = $this->extractDomainName($domain);
-        // Crear directorio para la web
-        if (!file_exists($webPath)) {
-            mkdir($webPath, 0755, true);
-            mkdir($webPath . '/images', 0755, true);
-            mkdir($webPath . '/css', 0755, true);
-        }
-
-        // Obtener el usuario autenticado
-        $user = Auth::user();
-        if (!$user) {
-            Log::warning('User is null despite auth middleware');
-            return back()->with('error', 'Authentication error. Please log in again.');
-        }
-        
-        // Crear registro en la tabla webs
-        $web = Web::create([
-            'url' => $domain,
-            'user_id' => $user_id,
-            'name' => $name
-
-        ]);
-        
-        // Obtener el ID de la web recién creada
-        $webId = $web->id;
-
-        // Crear registro en la tabla intermedia user_web
-        DB::table('user_web')->insert([
-            'user_id' => $user_id,
-            'web_id' => $webId,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
-
-            // Procesar cada tipo de página
-            $this->processMainPage($webId, $data, $webPath);
+    
+        try {
+            $data = $request->all();
+            $domain = $request->input('url');
+            $user_id = $request->input('user_id');
+            $webPath = public_path('webs/' . $domain);
+            $name = $this->extractDomainName($domain);
+            
+            // DEBUG: Log completo de los datos recibidos
+            \Log::info('=== DATOS RECIBIDOS EN PUBLISH ===', [
+                'domain' => $domain,
+                'user_id' => $user_id,
+                'data_keys' => array_keys($data),
+                'has_images' => isset($data['images']),
+                'images_type' => isset($data['images']) ? gettype($data['images']) : 'no_images',
+                'mainPageData_exists' => isset($data['mainPageData']),
+                'welcomeData_exists' => isset($data['welcomeData']),
+                'contactData_exists' => isset($data['contactData'])
+            ]);
+            
+            // Crear directorio para la web
+            if (!file_exists($webPath)) {
+                mkdir($webPath, 0755, true);
+                mkdir($webPath . '/images', 0755, true);
+                mkdir($webPath . '/css', 0755, true);
+            }
+    
+            // Obtener el usuario autenticado
+            $user = Auth::user();
+            if (!$user) {
+                \Log::warning('User is null despite auth middleware');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Authentication error. Please log in again.'
+                ], 401);
+            }
+            
+            // Preparar configuración de diseño
+            $designConfig = [
+                'welcomeMessage' => !empty($data['welcomeData']),
+                'contactPage' => !empty($data['contactData'])
+            ];
+            
+            // Preparar datos de páginas
+            $welcomePageData = null;
+            $mainPageData = null;
+            $contactPageData = null;
+            
+            if (!empty($data['welcomeData'])) {
+                $welcomePageData = json_decode($data['welcomeData'], true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('Error decodificando welcomeData: ' . json_last_error_msg());
+                    return response()->json(['success' => false, 'message' => 'Error en datos de bienvenida'], 400);
+                }
+            }
+            
+            if (!empty($data['mainPageData'])) {
+                $mainPageData = json_decode($data['mainPageData'], true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('Error decodificando mainPageData: ' . json_last_error_msg());
+                    return response()->json(['success' => false, 'message' => 'Error en datos principales'], 400);
+                }
+            }
+            
+            if (!empty($data['contactData'])) {
+                $contactPageData = json_decode($data['contactData'], true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('Error decodificando contactData: ' . json_last_error_msg());
+                    return response()->json(['success' => false, 'message' => 'Error en datos de contacto'], 400);
+                }
+            }
+            
+            // PROCESAMIENTO SEGURO DE IMÁGENES
+            $processedImages = [];
+            if (isset($data['images'])) {
+                \Log::info('Procesando imágenes...', [
+                    'images_type' => gettype($data['images']),
+                    'images_content' => is_string($data['images']) ? substr($data['images'], 0, 100) . '...' : $data['images']
+                ]);
+                
+                if (is_string($data['images'])) {
+                    // Si es string, intentar decodificar JSON
+                    $decodedImages = json_decode($data['images'], true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decodedImages)) {
+                        $processedImages = $decodedImages;
+                        \Log::info('Imágenes decodificadas correctamente', ['count' => count($processedImages)]);
+                    } else {
+                        \Log::warning('Error decodificando imágenes JSON: ' . json_last_error_msg());
+                    }
+                } elseif (is_array($data['images'])) {
+                    $processedImages = $data['images'];
+                    \Log::info('Imágenes ya son array', ['count' => count($processedImages)]);
+                } else {
+                    \Log::warning('Tipo de imágenes no reconocido: ' . gettype($data['images']));
+                }
+            } else {
+                \Log::info('No se recibieron imágenes');
+            }
+            
+            // Actualizar el array $data con las imágenes procesadas
+            $data['images'] = $processedImages;
+            
+            // Crear registro en la tabla webs
+            $web = Web::create([
+                'url' => $domain,
+                'user_id' => $user_id,
+                'name' => $name,
+                'design_config' => $designConfig,
+                'welcome_page_data' => $welcomePageData,
+                'main_page_data' => $mainPageData,
+                'contact_page_data' => $contactPageData,
+                'is_published' => true,
+                'published_at' => now()
+            ]);
+            
+            $webId = $web->id;
+            \Log::info('Web creada con ID: ' . $webId);
+    
+            // Crear registro en la tabla intermedia user_web
+            DB::table('user_web')->insert([
+                'user_id' => $user_id,
+                'web_id' => $webId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+    
+            // Procesar páginas con manejo de errores individual
+            try {
+                \Log::info('Procesando página principal...');
+                $this->processMainPage($webId, $data, $webPath);
+                \Log::info('Página principal procesada correctamente');
+            } catch (\Exception $e) {
+                \Log::error('Error procesando página principal: ' . $e->getMessage());
+                throw $e;
+            }
             
             if (isset($data['welcomeData'])) {
-                $this->processWelcomePage($webId, $data, $webPath);
+                try {
+                    \Log::info('Procesando página de bienvenida...');
+                    $this->processWelcomePage($webId, $data, $webPath);
+                    \Log::info('Página de bienvenida procesada correctamente');
+                } catch (\Exception $e) {
+                    \Log::error('Error procesando página de bienvenida: ' . $e->getMessage());
+                    throw $e;
+                }
             }
             
             if (isset($data['contactData'])) {
-                $this->processContactPage($webId, $data, $webPath);
+                try {
+                    \Log::info('Procesando página de contacto...');
+                    $this->processContactPage($webId, $data, $webPath);
+                    \Log::info('Página de contacto procesada correctamente');
+                } catch (\Exception $e) {
+                    \Log::error('Error procesando página de contacto: ' . $e->getMessage());
+                    throw $e;
+                }
             }
-
+    
+            \Log::info('=== PUBLICACIÓN COMPLETADA EXITOSAMENTE ===');
+    
+            // Determinar la URL inicial según si hay página de bienvenida
+            $initialUrl = url('webs/' . $domain . '/main.html'); // Por defecto main.html
+    
+            // Si hay página de bienvenida, empezar por welcome.html
+            if (!empty($data['welcomeData'])) {
+                $initialUrl = url('webs/' . $domain . '/welcome.html');
+            }
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Web publicada con éxito',
-                'url' => url('webs/' . $domain . '/main.html')
+                'url' => $initialUrl
             ]);
-
+    
         } catch (\Exception $e) {
+            \Log::error('=== ERROR EN PUBLISH ===', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+                'user_id' => auth()->id(),
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Error al publicar la web: ' . $e->getMessage()
             ], 500);
         }
     }
-   private function saveImage($base64Data, $webPath, $imageId)
+
+    // Método para republicar una web existente (nuevo)
+    public function republish(Web $web)
     {
-        $imageData = base64_decode($base64Data);
-        $extension = 'png'; // o detectar desde el base64
-        $filename = $imageId . '.' . $extension;
-        $imagePath = 'images/' . $filename;
-        
-        file_put_contents($webPath . '/' . $imagePath, $imageData);
-        
-        return $imagePath;
-    }
-    private function processMainPage($webId, $data, $webPath)
-    {
-        $mainData = json_decode($data['mainPageData'], true);
-        
-        // Guardar imágenes
-        $images = [];
-        if (isset($data['images'])) {
-            foreach ($data['images'] as $imageId => $imageData) {
-                if (strpos($imageId, 'main-') === 0) {
-                    $imagePath = $this->saveImage($imageData, $webPath, $imageId);
-                    $images[$imageId] = $imagePath;
-                }
+        try {
+            // Verificar permisos
+            if (!auth()->user()->webs->contains($web->id) && !auth()->user()->hasRole('admin')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tienes permisos para republicar esta web.'
+                ], 403);
             }
-        }
 
-        // Generar HTML
-        $html = $this->generateMainHtml($mainData, $images);
-        file_put_contents($webPath . '/main.html', $html);
-
-        // Generar CSS
-        $css = $this->generateMainCss($mainData);
-        file_put_contents($webPath . '/css/main.css', $css);
-
-        // Guardar en BD
-        Page::create([
-            'web_id' => $webId,
-            'type' => 'main',
-            'settings' => json_encode($mainData)
-        ]);
-    }
-
-    private function processWelcomePage($webId, $data, $webPath)
-    {
-        $welcomeData = json_decode($data['welcomeData'], true);
-        
-        // Guardar imágenes
-        $images = [];
-        if (isset($data['images'])) {
-            foreach ($data['images'] as $imageId => $imageData) {
-                if (strpos($imageId, 'welcome-') === 0 || $imageId === 'logoBienvenida' || $imageId === 'background') {
-                    $imagePath = $this->saveImage($imageData, $webPath, $imageId);
-                    $images[$imageId] = $imagePath;
-                }
+            $webPath = public_path('webs/' . $web->url);
+            
+            // Crear directorio para la web si no existe
+            if (!file_exists($webPath)) {
+                mkdir($webPath, 0755, true);
+                mkdir($webPath . '/images', 0755, true);
+                mkdir($webPath . '/css', 0755, true);
             }
+
+            // Preparar datos para regenerar archivos
+            $data = [
+                'mainPageData' => json_encode($web->main_page_data),
+                'welcomeData' => $web->welcome_page_data ? json_encode($web->welcome_page_data) : null,
+                'contactData' => $web->contact_page_data ? json_encode($web->contact_page_data) : null,
+                'images' => []
+            ];
+
+            // Recrear archivos
+            $this->processMainPage($web->id, $data, $webPath);
+            
+            if ($web->welcome_page_data) {
+                $this->processWelcomePage($web->id, $data, $webPath);
+            }
+            
+            if ($web->contact_page_data) {
+                $this->processContactPage($web->id, $data, $webPath);
+            }
+
+            // Actualizar estado de publicación
+            $web->update([
+                'is_published' => true,
+                'published_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Web republicada con éxito',
+                'url' => $web->getPublicUrl()
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al republicar la web: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al republicar la web'
+            ], 500);
         }
-
-        // Generar HTML
-        $html = $this->generateWelcomeHtml($welcomeData, $images);
-        file_put_contents($webPath . '/welcome.html', $html);
-
-        // Generar CSS
-        $css = $this->generateWelcomeCss($welcomeData);
-        file_put_contents($webPath . '/css/welcome.css', $css);
-
-        // Guardar en BD
-        Page::create([
-            'web_id' => $webId,
-            'type' => 'welcome',
-            'settings' => json_encode($welcomeData)
-        ]);
     }
 
-    private function processContactPage($webId, $data, $webPath)
-    {
-        $contactData = json_decode($data['contactData'], true);
-        
-        // Generar HTML
-        $html = $this->generateContactHtml($contactData);
-        file_put_contents($webPath . '/contact.html', $html);
-
-        // Generar CSS (usamos el mismo CSS de main para consistencia)
-        copy($webPath . '/css/main.css', $webPath . '/css/contact.css');
-
-        // Guardar en BD
-        Page::create([
-            'web_id' => $webId,
-            'type' => 'contact',
-            'settings' => json_encode($contactData)
-        ]);
-    }
-
- 
-
+    // Resto de métodos existentes (mantener todos los métodos de generación HTML/CSS)
+    
     private function generateMainHtml($data, $images)
     {
         $logoUrl = isset($images['main-logo']) ? $images['main-logo'] : '';
@@ -622,34 +718,49 @@ footer {
     }
 
     private function generateContactHtml($data)
-    {
-        $showMap = isset($data['showMap']) ? $data['showMap'] : false;
-        $mapAddress = isset($data['mapAddress']) ? htmlspecialchars($data['mapAddress']) : '';
-        $contactInfo = isset($data['contactInfo']) ? $data['contactInfo'] : [];
-        
-        $contactItems = '';
-        foreach ($contactInfo as $type => $info) {
-            if (isset($info['selected']) && $info['selected'] && !empty($info['text'])) {
-                $title = ucfirst($type);
-                $text = htmlspecialchars($info['text']);
-                $contactItems .= '<div class="contact-item">
-    <span class="contact-title">' . $title . ':</span>
-    <span class="contact-text">' . $text . '</span>
+{
+    $showMap = isset($data['showMap']) ? $data['showMap'] : false;
+    $mapAddress = isset($data['mapAddress']) ? htmlspecialchars($data['mapAddress']) : '';
+    $contactInfo = isset($data['contactInfo']) ? $data['contactInfo'] : [];
+    
+    // Generar items de contacto con estilo mejorado
+    $contactItems = '';
+    $hasContactInfo = false;
+    
+    foreach ($contactInfo as $type => $info) {
+        if (isset($info['selected']) && $info['selected'] && !empty($info['text'])) {
+            $hasContactInfo = true;
+            $title = ucfirst($type);
+            $text = htmlspecialchars($info['text']);
+            $contactItems .= '<div class="contact-item">
+    <div class="contact-title">' . $title . '</div>
+    <div class="contact-text">' . $text . '</div>
 </div>';
-            }
         }
-        
-        $mapSection = '';
-        if ($showMap && $mapAddress) {
-            $mapSection = '<div class="map-section">
-    <h3>Ubicación</h3>
+    }
+    
+    // Si no hay información de contacto, mostrar placeholder
+    if (!$hasContactInfo) {
+        $contactItems = '<div class="contact-placeholder">
+    <div class="contact-placeholder-icon">📞</div>
+    <div class="contact-placeholder-text">Información de contacto no disponible</div>
+</div>';
+    }
+    
+    // Sección del mapa
+    $mapSection = '';
+    if ($showMap && $mapAddress) {
+        $mapSection = '<div class="map-section">
+    <h2 class="map-title">Nuestra Ubicación</h2>
+    <p class="map-address">' . htmlspecialchars($mapAddress) . '</p>
     <div class="map-container">
-        <iframe src="https://maps.google.com/maps?q=' . $mapAddress . '&output=embed"></iframe>
+        <iframe src="https://maps.google.com/maps?q=' . urlencode($mapAddress) . '&output=embed" 
+                frameborder="0" allowfullscreen></iframe>
     </div>
 </div>';
-        }
-        
-        $html = '<!DOCTYPE html>
+    }
+    
+    $html = '<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -669,31 +780,35 @@ footer {
         <a href="contact.html">Contacto</a>
     </nav>
     
-    <main>
-        <div class="contact-info">
-            <h2>Información de Contacto</h2>
-            ' . $contactItems . '
-        </div>
-        
-        ' . $mapSection . '
-        
-        <div class="contact-form">
-            <h3>Envíanos un mensaje</h3>
-            <form>
-                <div class="form-group">
-                    <label for="email">Correo electrónico:</label>
-                    <input type="email" id="email" required>
+    <main class="contact-main">
+        <div class="contact-content">
+            <div class="contact-info-section">
+                <h2 class="section-title">Información de Contacto</h2>
+                <div class="contact-items-container">
+                    ' . $contactItems . '
                 </div>
-                <div class="form-group">
-                    <label for="subject">Asunto:</label>
-                    <input type="text" id="subject" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">Mensaje:</label>
-                    <textarea id="message" required></textarea>
-                </div>
-                <button type="submit">Enviar Mensaje</button>
-            </form>
+            </div>
+            
+            ' . $mapSection . '
+            
+            <div class="contact-form-section">
+                <h2 class="section-title">Envíanos un mensaje</h2>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Correo electrónico:</label>
+                        <input type="email" id="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" class="form-label">Asunto:</label>
+                        <input type="text" id="subject" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Mensaje:</label>
+                        <textarea id="message" class="form-textarea" required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Enviar Mensaje</button>
+                </form>
+            </div>
         </div>
     </main>
     
@@ -703,9 +818,287 @@ footer {
 </body>
 </html>';
 
-        return $html;
-    }
+    return $html;
+}
+private function generateContactCss($mainData)
+{
+    $bgColor = isset($mainData['bgColor']) ? $mainData['bgColor'] : '#ffffff';
+    $textColor = isset($mainData['textColor']) ? $mainData['textColor'] : '#000000';
+    $headerBgColor = isset($mainData['header']['bgColor']) ? $mainData['header']['bgColor'] : '#f8f8f8';
+    $headerTextColor = isset($mainData['header']['textColor']) ? $mainData['header']['textColor'] : '#000000';
+    $footerBgColor = isset($mainData['footer']['bgColor']) ? $mainData['footer']['bgColor'] : '#f8f8f8';
+    $footerTextColor = isset($mainData['footer']['textColor']) ? $mainData['footer']['textColor'] : '#000000';
+    $fontFamily = isset($mainData['fontFamily']) ? $mainData['fontFamily'] : 'Arial, sans-serif';
+    
+    return 'body {
+    font-family: ' . $fontFamily . ';
+    background-color: ' . $bgColor . ';
+    color: ' . $textColor . ';
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
 
+header {
+    background-color: ' . $headerBgColor . ';
+    padding: 15px;
+    color: ' . $headerTextColor . ';
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+nav {
+    background-color: ' . $this->lightenColor($headerBgColor, 20) . ';
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav a {
+    color: ' . $textColor . ';
+    text-decoration: none;
+    padding: 8px 16px;
+    margin: 0 5px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+nav a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.contact-main {
+    padding: 40px 20px;
+    min-height: calc(100vh - 200px);
+}
+
+.contact-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.section-title {
+    color: ' . $textColor . ';
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 3px solid #3b82f6;
+    padding-bottom: 10px;
+}
+
+/* Sección de información de contacto */
+.contact-info-section {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+    border: 1px solid #e9ecef;
+}
+
+.contact-items-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.contact-item {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.contact-title {
+    font-weight: bold;
+    color: ' . $textColor . ';
+    font-size: 16px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 5px;
+}
+
+.contact-text {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.contact-placeholder {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.contact-placeholder-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.contact-placeholder-text {
+    font-size: 18px;
+    font-style: italic;
+}
+
+/* Sección del mapa */
+.map-section {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+    border: 1px solid #e9ecef;
+}
+
+.map-title {
+    color: ' . $textColor . ';
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.map-address {
+    color: #666;
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.map-container {
+    width: 100%;
+    height: 350px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 2px solid #e9ecef;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Sección del formulario de contacto */
+.contact-form-section {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+}
+
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: ' . $textColor . ';
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 2px solid #e9ecef;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    background-color: #fff;
+    box-sizing: border-box;
+    font-family: ' . $fontFamily . ';
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-submit {
+    width: 100%;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-submit:hover {
+    background-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+footer {
+    background-color: ' . $footerBgColor . ';
+    padding: 15px;
+    text-align: center;
+    color: ' . $footerTextColor . ';
+    margin-top: auto;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .contact-items-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .contact-main {
+        padding: 20px 10px;
+    }
+    
+    .contact-info-section,
+    .map-section,
+    .contact-form-section {
+        padding: 20px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+    
+    .map-container {
+        height: 250px;
+    }
+}';
+}
     // Funciones auxiliares
     private function extractVideoId($url)
     {
@@ -763,26 +1156,482 @@ footer {
         $b = hexdec($length == 3 ? $hex[2].$hex[2] : substr($hex, 4, 2));
         
         if ($component) {
-            return $$component;
+            return $component;
         }
         
         return ['r' => $r, 'g' => $g, 'b' => $b];
     }
 
     private function extractDomainName($domain)
+    {
+        // Remover www. si existe
+        $domain = preg_replace('/^www\./', '', $domain);
+        
+        // Encontrar la última posición del punto
+        $lastDotPosition = strrpos($domain, '.');
+        
+        if ($lastDotPosition !== false) {
+            // Extraer todo antes del último punto
+            return substr($domain, 0, $lastDotPosition);
+        }
+        
+        // Si no hay punto, devolver el dominio completo
+        return $domain;
+    }
+
+    private function saveImage($base64Data, $webPath, $imageId)
 {
-    // Remover www. si existe
-    $domain = preg_replace('/^www\./', '', $domain);
-    
-    // Encontrar la última posición del punto
-    $lastDotPosition = strrpos($domain, '.');
-    
-    if ($lastDotPosition !== false) {
-        // Extraer todo antes del último punto
-        return substr($domain, 0, $lastDotPosition);
+    try {
+        // Validar que los datos no estén vacíos
+        if (empty($base64Data)) {
+            throw new \Exception('Datos de imagen vacíos para: ' . $imageId);
+        }
+
+        // Remover el prefijo data:image/xxx;base64, si existe
+        if (strpos($base64Data, 'data:image') === 0) {
+            $base64Data = preg_replace('/^data:image\/[^;]+;base64,/', '', $base64Data);
+        }
+
+        // Decodificar base64
+        $imageData = base64_decode($base64Data);
+        if ($imageData === false) {
+            throw new \Exception('Error decodificando base64 para imagen: ' . $imageId);
+        }
+
+        // Validar que la decodificación produjo datos
+        if (empty($imageData)) {
+            throw new \Exception('Imagen decodificada está vacía: ' . $imageId);
+        }
+
+        // Determinar extensión (por defecto png)
+        $extension = 'png';
+        
+        // Intentar detectar el tipo de imagen desde los datos decodificados
+        $imageInfo = @getimagesizefromstring($imageData);
+        if ($imageInfo !== false) {
+            switch ($imageInfo['mime']) {
+                case 'image/jpeg':
+                    $extension = 'jpg';
+                    break;
+                case 'image/png':
+                    $extension = 'png';
+                    break;
+                case 'image/gif':
+                    $extension = 'gif';
+                    break;
+                case 'image/webp':
+                    $extension = 'webp';
+                    break;
+            }
+        }
+
+        // Crear nombre de archivo seguro
+        $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $imageId) . '.' . $extension;
+        $imagePath = 'images/' . $filename;
+        $fullPath = $webPath . '/' . $imagePath;
+
+        // Verificar que el directorio de imágenes existe
+        $imageDir = dirname($fullPath);
+        if (!is_dir($imageDir)) {
+            if (!mkdir($imageDir, 0755, true)) {
+                throw new \Exception('No se pudo crear el directorio de imágenes: ' . $imageDir);
+            }
+        }
+
+        // Guardar la imagen
+        $bytesWritten = file_put_contents($fullPath, $imageData);
+        if ($bytesWritten === false) {
+            throw new \Exception('Error escribiendo archivo de imagen: ' . $fullPath);
+        }
+
+        \Log::info('Imagen guardada exitosamente', [
+            'imageId' => $imageId,
+            'filename' => $filename,
+            'path' => $imagePath,
+            'size' => $bytesWritten . ' bytes'
+        ]);
+
+        return $imagePath;
+
+    } catch (\Exception $e) {
+        \Log::error('Error en saveImage: ' . $e->getMessage(), [
+            'imageId' => $imageId,
+            'webPath' => $webPath,
+            'base64_length' => strlen($base64Data)
+        ]);
+        throw $e;
+    }
+}
+
+    private function processMainPage($webId, $data, $webPath)
+{
+    \Log::info('=== PROCESANDO PÁGINA PRINCIPAL ===', [
+        'webId' => $webId,
+        'has_mainPageData' => isset($data['mainPageData']),
+        'has_images' => isset($data['images']),
+        'images_count' => isset($data['images']) && is_array($data['images']) ? count($data['images']) : 0
+    ]);
+
+    $mainData = json_decode($data['mainPageData'], true);
+    if (!$mainData) {
+        throw new \Exception('Error decodificando datos de página principal');
     }
     
-    // Si no hay punto, devolver el dominio completo
-    return $domain;
+    // Procesar imágenes de forma segura
+    $images = [];
+    if (isset($data['images']) && is_array($data['images']) && count($data['images']) > 0) {
+        \Log::info('Procesando imágenes para página principal...');
+        foreach ($data['images'] as $imageId => $imageData) {
+            try {
+                if (strpos($imageId, 'main-') === 0) {
+                    \Log::info('Guardando imagen: ' . $imageId);
+                    $imagePath = $this->saveImage($imageData, $webPath, $imageId);
+                    $images[$imageId] = $imagePath;
+                    \Log::info('Imagen guardada: ' . $imageId . ' -> ' . $imagePath);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Error guardando imagen ' . $imageId . ': ' . $e->getMessage());
+                // Continuar con las demás imágenes
+            }
+        }
+    } else {
+        \Log::info('No hay imágenes para procesar en página principal');
+    }
+
+    // Generar HTML
+    \Log::info('Generando HTML principal...');
+    $html = $this->generateMainHtml($mainData, $images);
+    $htmlPath = $webPath . '/main.html';
+    if (file_put_contents($htmlPath, $html) === false) {
+        throw new \Exception('No se pudo crear el archivo main.html');
+    }
+    \Log::info('HTML principal creado: ' . $htmlPath);
+
+    // Generar CSS
+    \Log::info('Generando CSS principal...');
+    $css = $this->generateMainCss($mainData);
+    $cssPath = $webPath . '/css/main.css';
+    if (file_put_contents($cssPath, $css) === false) {
+        throw new \Exception('No se pudo crear el archivo main.css');
+    }
+    \Log::info('CSS principal creado: ' . $cssPath);
+
+    // Guardar en BD
+    \Log::info('Guardando configuración en BD...');
+    Page::updateOrCreate(
+        ['web_id' => $webId, 'type' => 'main'],
+        ['settings' => json_encode($mainData)]
+    );
+    \Log::info('Página principal guardada en BD');
+}
+
+private function processWelcomePage($webId, $data, $webPath)
+{
+    \Log::info('=== PROCESANDO PÁGINA DE BIENVENIDA ===', [
+        'webId' => $webId,
+        'has_welcomeData' => isset($data['welcomeData']),
+        'has_images' => isset($data['images']),
+        'images_count' => isset($data['images']) && is_array($data['images']) ? count($data['images']) : 0
+    ]);
+
+    $welcomeData = json_decode($data['welcomeData'], true);
+    if (!$welcomeData) {
+        throw new \Exception('Error decodificando datos de página de bienvenida');
+    }
+    
+    // Procesar imágenes de forma segura
+    $images = [];
+    if (isset($data['images']) && is_array($data['images']) && count($data['images']) > 0) {
+        \Log::info('Procesando imágenes para página de bienvenida...');
+        foreach ($data['images'] as $imageId => $imageData) {
+            try {
+                if (strpos($imageId, 'welcome-') === 0 || $imageId === 'logoBienvenida' || $imageId === 'background') {
+                    \Log::info('Guardando imagen: ' . $imageId);
+                    $imagePath = $this->saveImage($imageData, $webPath, $imageId);
+                    $images[$imageId] = $imagePath;
+                    \Log::info('Imagen guardada: ' . $imageId . ' -> ' . $imagePath);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Error guardando imagen ' . $imageId . ': ' . $e->getMessage());
+                // Continuar con las demás imágenes
+            }
+        }
+    } else {
+        \Log::info('No hay imágenes para procesar en página de bienvenida');
+    }
+
+    // Generar HTML
+    \Log::info('Generando HTML de bienvenida...');
+    $html = $this->generateWelcomeHtml($welcomeData, $images);
+    $htmlPath = $webPath . '/welcome.html';
+    if (file_put_contents($htmlPath, $html) === false) {
+        throw new \Exception('No se pudo crear el archivo welcome.html');
+    }
+    \Log::info('HTML de bienvenida creado: ' . $htmlPath);
+
+    // Generar CSS
+    \Log::info('Generando CSS de bienvenida...');
+    $css = $this->generateWelcomeCss($welcomeData);
+    $cssPath = $webPath . '/css/welcome.css';
+    if (file_put_contents($cssPath, $css) === false) {
+        throw new \Exception('No se pudo crear el archivo welcome.css');
+    }
+    \Log::info('CSS de bienvenida creado: ' . $cssPath);
+
+    // Guardar en BD
+    \Log::info('Guardando configuración en BD...');
+    Page::updateOrCreate(
+        ['web_id' => $webId, 'type' => 'welcome'],
+        ['settings' => json_encode($welcomeData)]
+    );
+    \Log::info('Página de bienvenida guardada en BD');
+}
+
+private function processContactPage($webId, $data, $webPath)
+{
+    \Log::info('=== PROCESANDO PÁGINA DE CONTACTO ===', [
+        'webId' => $webId,
+        'has_contactData' => isset($data['contactData'])
+    ]);
+
+    $contactData = json_decode($data['contactData'], true);
+    if (!$contactData) {
+        throw new \Exception('Error decodificando datos de página de contacto');
+    }
+    
+    // Obtener datos de la página principal para mantener consistencia de diseño
+    $mainData = json_decode($data['mainPageData'], true);
+    if (!$mainData) {
+        $mainData = []; // Valores por defecto si no hay datos principales
+    }
+    
+    // Generar HTML
+    \Log::info('Generando HTML de contacto...');
+    $html = $this->generateContactHtml($contactData);
+    $htmlPath = $webPath . '/contact.html';
+    if (file_put_contents($htmlPath, $html) === false) {
+        throw new \Exception('No se pudo crear el archivo contact.html');
+    }
+    \Log::info('HTML de contacto creado: ' . $htmlPath);
+
+    // Generar CSS específico para contacto
+    \Log::info('Generando CSS de contacto...');
+    $css = $this->generateContactCss($mainData);
+    $cssPath = $webPath . '/css/contact.css';
+    if (file_put_contents($cssPath, $css) === false) {
+        throw new \Exception('No se pudo crear el archivo contact.css');
+    }
+    \Log::info('CSS de contacto creado: ' . $cssPath);
+
+    // Guardar en BD
+    \Log::info('Guardando configuración en BD...');
+    Page::updateOrCreate(
+        ['web_id' => $webId, 'type' => 'contact'],
+        ['settings' => json_encode($contactData)]
+    );
+    \Log::info('Página de contacto guardada en BD');
+}
+    public function saveDraft(Request $request)
+{
+    try {
+        \Log::info('=== INICIANDO GUARDADO DE BORRADOR ===', [
+            'user_id' => $request->input('user_id'),
+            'name' => $request->input('name'),
+            'has_mainPageData' => $request->has('mainPageData'),
+            'has_welcomeData' => $request->has('welcomeData'),
+            'has_contactData' => $request->has('contactData'),
+            'has_images' => $request->has('images')
+        ]);
+
+        // 1. Verificar autenticación
+        $user = Auth::user();
+        if (!$user) {
+            \Log::warning('Usuario no autenticado intentando guardar borrador');
+            return response()->json([
+                'success' => false,
+                'message' => 'Authentication error. Please log in again.'
+            ], 401);
+        }
+
+        // 2. Obtener y validar datos básicos
+        $user_id = $request->input('user_id');
+        $name = $request->input('name');
+        
+        // Verificar que el user_id coincida con el usuario autenticado
+        if ($user->id != $user_id) {
+            \Log::warning('User ID mismatch', [
+                'auth_user_id' => $user->id,
+                'request_user_id' => $user_id
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autorizado.'
+            ], 403);
+        }
+        
+        // Validar nombre
+        if (!$name || trim($name) === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Se requiere un nombre para la web.'
+            ], 400);
+        }
+        
+        // Validar datos mínimos requeridos
+        if (!$request->has('mainPageData') || empty($request->input('mainPageData'))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Se requieren datos de la página principal.'
+            ], 400);
+        }
+
+        // 3. Procesar datos de páginas
+        $mainPageData = null;
+        $welcomePageData = null;
+        $contactPageData = null;
+        
+        // Procesar mainPageData (obligatorio)
+        $mainPageDataRaw = $request->input('mainPageData');
+        $mainPageData = json_decode($mainPageDataRaw, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            \Log::error('Error decodificando mainPageData: ' . json_last_error_msg());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error en los datos de la página principal.'
+            ], 400);
+        }
+        
+        // Procesar welcomeData (opcional)
+        if ($request->has('welcomeData') && !empty($request->input('welcomeData'))) {
+            $welcomeDataRaw = $request->input('welcomeData');
+            $welcomePageData = json_decode($welcomeDataRaw, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                \Log::warning('Error decodificando welcomeData: ' . json_last_error_msg());
+                $welcomePageData = null;
+            }
+        }
+        
+        // Procesar contactData (opcional)
+        if ($request->has('contactData') && !empty($request->input('contactData'))) {
+            $contactDataRaw = $request->input('contactData');
+            $contactPageData = json_decode($contactDataRaw, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                \Log::warning('Error decodificando contactData: ' . json_last_error_msg());
+                $contactPageData = null;
+            }
+        }
+
+        // 4. Preparar configuración de diseño
+        $designConfig = [
+            'welcomeMessage' => !empty($welcomePageData),
+            'contactPage' => !empty($contactPageData)
+        ];
+        
+        \Log::info('Datos procesados correctamente', [
+            'name' => trim($name),
+            'design_config' => $designConfig,
+            'has_main_data' => !empty($mainPageData),
+            'has_welcome_data' => !empty($welcomePageData),
+            'has_contact_data' => !empty($contactPageData)
+        ]);
+
+        // 5. Crear registro en la tabla webs como borrador
+        $web = Web::create([
+            'url' => '', // Sin URL ya que es borrador
+            'user_id' => $user_id,
+            'name' => trim($name),
+            'design_config' => $designConfig,
+            'welcome_page_data' => $welcomePageData,
+            'main_page_data' => $mainPageData,
+            'contact_page_data' => $contactPageData,
+            'is_published' => false,
+            'published_at' => null
+        ]);
+        
+        \Log::info('Web creada con ID: ' . $web->id);
+
+        // 6. Crear registro en la tabla intermedia user_web
+        DB::table('user_web')->insert([
+            'user_id' => $user_id,
+            'web_id' => $web->id,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // 7. Procesar imágenes si existen
+        if ($request->has('images') && !empty($request->input('images'))) {
+            try {
+                $imagesJson = $request->input('images');
+                $images = json_decode($imagesJson, true);
+                
+                if ($images && is_array($images) && count($images) > 0) {
+                    // Crear directorio para las imágenes del borrador
+                    $draftPath = storage_path('app/drafts/' . $web->id);
+                    if (!file_exists($draftPath)) {
+                        mkdir($draftPath, 0755, true);
+                    }
+                    
+                    // Guardar cada imagen
+                    $savedImages = [];
+                    foreach ($images as $imageId => $imageData) {
+                        try {
+                            $imageContent = base64_decode($imageData);
+                            if ($imageContent !== false) {
+                                $extension = 'png'; // Podrías detectar la extensión real del base64
+                                $filename = $imageId . '.' . $extension;
+                                $filepath = $draftPath . '/' . $filename;
+                                
+                                if (file_put_contents($filepath, $imageContent)) {
+                                    $savedImages[] = $imageId;
+                                }
+                            }
+                        } catch (\Exception $imageError) {
+                            \Log::warning("Error guardando imagen {$imageId}: " . $imageError->getMessage());
+                        }
+                    }
+                    
+                    \Log::info('Imágenes guardadas: ' . implode(', ', $savedImages));
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Error procesando imágenes del borrador: ' . $e->getMessage());
+                // No fallar el proceso por error en imágenes
+            }
+        }
+
+        // 8. Respuesta exitosa
+        \Log::info('=== BORRADOR GUARDADO EXITOSAMENTE ===', [
+            'web_id' => $web->id,
+            'user_id' => $user_id,
+            'name' => $web->name
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Web guardada como borrador exitosamente',
+            'web_id' => $web->id,
+            'web_name' => $web->name,
+            'debug_info' => [
+                'design_config' => $designConfig,
+                'has_welcome_page' => $designConfig['welcomeMessage'],
+                'has_contact_page' => $designConfig['contactPage'],
+                'created_at' => $web->created_at->toISOString()
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('=== ERROR AL GUARDAR BORRADOR ===', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+            'request_data' => $request->all(),
+            'user_id' => auth()->id(),
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Error interno del servidor al guardar el borrador'
+        ], 500);
+    }
 }
 }

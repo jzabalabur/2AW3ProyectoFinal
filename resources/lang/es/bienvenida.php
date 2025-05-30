@@ -53,5 +53,18 @@ return [
     'mensaje_reset' => 'Esta acción borrará todo tu diseño actual. ¿Deseas continuar?',
     'cancelar' => 'Cancelar',
     'borrar_todo' => 'Borrar todo',
+    'color_solido' => 'Color Sólido',
+    'logotipo' => 'Logotipo',
+    'subir_logotipo' => 'Subir Logotipo',
+    'boton_entrada' => 'Botón de Entrada',
+    'tamano_fuente_boton' => 'Tamaño de Fuente del Botón',
+    'relleno_boton' => 'Relleno del Botón',
+    'personalizar_contenido' => 'Personalizar Contenido',
+    'opacidad_fondo' => 'Opacidad del Fondo',
+    'tipografia' => 'Tipografía',
+    'tamano_fuente' => 'Tamaño de Fuente',
+    'negrita' => 'Negrita',
+    'cursiva' => 'Cursiva',
+    'parrafo' => 'Párrafo',
 ];
 

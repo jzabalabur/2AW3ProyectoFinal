@@ -1,0 +1,15 @@
+[90m= [39m[34;4mApp\Models\Web[39;24m {#6381
+    [34mid[39m: [35m27[39m,
+    [34muser_id[39m: [35m4[39m,
+    [34mname[39m: "[32mMi Web - 29/05/2025, 22:04[39m",
+    [34murl[39m: "",
+    [34mdesign_config[39m: "[32m{"contactPage": true, "welcomeMessage": true}[39m",
+    [34mwelcome_page_data[39m: "[32m{"logo_size": "150", "title_bold": "false", "button_text": null, "font_family": "Verdana, sans-serif", "button_color": "#9141ac", "title_italic": "false", "logo_position": "center", "welcome_title": "Pedazo web", "button_padding": "17", "paragraph_bold": "false", "background_type": "color", "title_font_size": "24", "welcome_message": "pepinaco", "background_color": "#f66151", "button_font_size": "23", "content_bg_color": "#ffffff", "paragraph_italic": "false", "button_text_color": "#ffffff", "content_bg_opacity": "38", "content_text_color": "#f6f5f4", "paragraph_font_size": "16"}[39m",
+    [34mmain_page_data[39m: "[32m{"bg_color": "#9a9996", "text_color": "#000000", "font_family": "Arial, sans-serif", "footer_text": "Puto pie", "header_text": "HEADERRRRRR", "photo_title": "FOTACA", "content_type": "feature-module", "logo_position": "left", "footer_bg_color": "#613583", "header_bg_color": "#f8e45c", "footer_text_color": "#deddda", "header_text_color": "#613583", "photo_description": "Me canso de escribir", "feature_module_columns": "[{\"icon\":\"shield\",\"text\":\"Pedazo escudo\"},{\"icon\":\"trophy\",\"text\":\"Pedazo copa\"},{\"icon\":\"star\",\"text\":\"Pedazo estrella\"}]", "photo_description_align": "justify"}[39m",
+    [34mcontact_page_data[39m: "[32m{"show_map": "false", "map_address": null, "contact_info": "{\"phone\":{\"selected\":false,\"text\":\"\"},\"email\":{\"selected\":false,\"text\":\"\"},\"address\":{\"selected\":false,\"text\":\"\"},\"schedule\":{\"selected\":false,\"text\":\"\"},\"social\":{\"selected\":false,\"text\":\"\"}}"}[39m",
+    [34mis_published[39m: [35m0[39m,
+    [34mpublished_at[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2025-05-29 20:04:47[39m",
+    [34mupdated_at[39m: "[32m2025-05-29 20:21:17[39m",
+  }
+

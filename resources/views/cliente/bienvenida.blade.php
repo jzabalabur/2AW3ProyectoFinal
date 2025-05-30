@@ -1,28 +1,36 @@
 @extends('layouts.app')
 
-@section('title', __('bienvenida.pagina_diseno_titulo'))
+@section('title', isset($web) ? 'Editar Bienvenida - ' . $web->name : __('bienvenida.pagina_diseno_titulo'))
 
 @push('styles')
-    <!--CSS específico de la página-->
     @vite(['resources/css/diseno.css'])
     @vite(['resources/css/bienvenida.css'])
 @endpush
 
 @section('content')
 <div class="main-container">
+    @if(isset($web))
+        <!-- Navegación para edición -->
+        <div class="edit-navigation">
+            <a href="{{ route('webs.edit', $web) }}" class="back-link">← Volver a edición de web</a>
+            <h2>Editando página de bienvenida: {{ $web->name }}</h2>
+        </div>
+    @endif
+
     <!-- Barra de progreso -->
     <div class="progress-container">
         <div class="progress-bar">
-            <div class="progress" style="width: 20%;"></div>
+            <div class="progress" style="width: 40%;"></div>
         </div>
         <div class="progress-steps">
             <div class="progress-step completed">{{ __('bienvenida.inicio') }}</div>
-            <div class="progress-step">{{ __('bienvenida.bienvenida') }}</div>
+            <div class="progress-step active">{{ __('bienvenida.bienvenida') }}</div>
             <div class="progress-step">{{ __('bienvenida.principal') }}</div>
             <div class="progress-step">{{ __('bienvenida.contacto') }}</div>
             <div class="progress-step">{{ __('bienvenida.publicar') }}</div>
         </div>
     </div>
+    
     <div class="design-container">
         <!-- Vista previa -->
         <div class="preview-container">
@@ -38,149 +46,221 @@
         <div class="form-container">
             <h3>{{ __('bienvenida.diseno_bienvenida') }}</h3>
 
-            <!-- Sección: Bienvenida -->
-            <div class="form-section">
-                <h3>{{ __('bienvenida.texto_bienvenida') }}</h3>
-                <label for="welcome-title">{{ __('bienvenida.titulo') }}</label>
-                <input type="text" id="welcome-title" placeholder="{{ __('bienvenida.placeholder_titulo') }}">
+            <form id="welcome-form" enctype="multipart/form-data">
+                @csrf
 
-                <label for="welcome-message">{{ __('bienvenida.mensaje') }}</label>
-                <textarea id="welcome-message" placeholder="{{ __('bienvenida.placeholder_mensaje') }}"></textarea>
-            </div>
+                <!-- Sección: Bienvenida -->
+                <div class="form-section">
+                    <h3>{{ __('bienvenida.texto_bienvenida') }}</h3>
+                    <label for="welcome-title">{{ __('bienvenida.titulo') }}</label>
+                    <input type="text" id="welcome-title" name="welcome_title" 
+                           placeholder="{{ __('bienvenida.placeholder_titulo') }}">
 
-            <!-- Sección: Fuente -->
-            <div class="form-section">
-                <h3>{{ __('bienvenida.fuente') }}</h3>
-                <label for="font-family">{{ __('bienvenida.fuente_texto') }}</label>
-                <select id="font-family">
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="Georgia, serif">Georgia</option>
-                    <option value="Courier New, monospace">Courier New</option>
-                    <option value="Verdana, sans-serif">Verdana</option>
-                    <option value="Times New Roman, serif">Times New Roman</option>
-                </select>
-            </div>
-
-            <!-- Sección: Fondo -->
-            <div class="form-section">
-                <h3>{{ __('bienvenida.fondo') }}</h3>
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" name="background-type" value="color" checked> {{ __('bienvenida.color_fondo') }}
-                    </label>
-                    <label>
-                        <input type="radio" name="background-type" value="image"> {{ __('bienvenida.imagen_fondo') }}
-                    </label>
+                    <label for="welcome-message">{{ __('bienvenida.mensaje') }}</label>
+                    <textarea id="welcome-message" name="welcome_message" 
+                              placeholder="{{ __('bienvenida.placeholder_mensaje') }}"></textarea>
                 </div>
 
-                <div id="color-background-controls">
-                    <label for="welcome-bg-color">{{ __('bienvenida.color_fondo') }}</label>
-                    <input type="color" id="welcome-bg-color" value="#ffffff">
+                <!-- Sección: Fuente -->
+                <div class="form-section">
+                    <h3>{{ __('bienvenida.fuente') }}</h3>
+                    <label for="font-family">{{ __('bienvenida.fuente_texto') }}</label>
+                    <select id="font-family" name="font_family">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="Courier New, monospace">Courier New</option>
+                        <option value="Verdana, sans-serif">Verdana</option>
+                        <option value="Times New Roman, serif">Times New Roman</option>
+                    </select>
                 </div>
 
-                <div id="image-background-controls" style="display: none;">
-                    <label for="background-image-input">{{ __('bienvenida.subir_imagen_fondo') }}</label>
-                    <input type="file" id="background-image-input" accept="image/*">
+                <!-- Sección: Fondo -->
+                <div class="form-section">
+                    <h3>{{ __('bienvenida.fondo') }}</h3>
+                    <div class="background-type-container">
+                        <label>
+                            <input type="radio" name="background-type" value="color" checked>
+                            {{ __('bienvenida.color_solido') }}
+                        </label>
+                        <label>
+                            <input type="radio" name="background-type" value="image">
+                            {{ __('bienvenida.imagen_fondo') }}
+                        </label>
+                    </div>
+
+                    <div id="color-background-controls" class="background-controls">
+                        <label for="welcome-bg-color">{{ __('bienvenida.color_fondo') }}</label>
+                        <input type="color" id="welcome-bg-color" name="background_color" value="#ffffff">
+                    </div>
+
+                    <div id="image-background-controls" class="background-controls" style="display: none;">
+                        <label for="background-image-input">{{ __('bienvenida.imagen_fondo') }}</label>
+                        <input type="file" id="background-image-input" name="background_image" accept="image/*">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Sección: Logo -->
-            <div class="form-section">
-                <h3>{{ __('bienvenida.logo') }}</h3>
-                <label for="logo">{{ __('bienvenida.subir_logo') }}</label>
-                <input type="file" id="logo" accept="image/*">
-
-                <label for="logo-size">{{ __('bienvenida.tamano_logo') }}</label>
-                <input type="number" id="logo-size" value="100" min="50" max="300">
-
-                <div class="logo-position-container">
+                <!-- Sección: Logo -->
+                <div class="form-section">
+                    <h3>{{ __('bienvenida.logotipo') }}</h3>
+                    <label for="logo">{{ __('bienvenida.subir_logotipo') }}</label>
+                    <input type="file" id="logo" name="logo" accept="image/*">
+                    
+                    <label for="logo-size">{{ __('bienvenida.tamano_logo') }}</label>
+                    <input type="range" id="logo-size" name="logo_size" min="50" max="200" value="100">
+                    <span id="logo-size-value">100px</span>
+                    
                     <label for="logo-position">{{ __('bienvenida.posicion_logo') }}</label>
-                    <select id="logo-position">
+                    <select id="logo-position" name="logo_position">
                         <option value="center">{{ __('bienvenida.centro') }}</option>
                         <option value="left">{{ __('bienvenida.izquierda') }}</option>
                         <option value="right">{{ __('bienvenida.derecha') }}</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- Sección: Botón -->
-            <div class="form-section">
-                <h3>{{ __('bienvenida.boton') }}</h3>
-                <label for="button-text">{{ __('bienvenida.texto_boton') }}</label>
-                <input type="text" id="button-text" placeholder="{{ __('bienvenida.placeholder_boton') }}">
-
-                <label for="button-color">{{ __('bienvenida.color_boton') }}</label>
-                <input type="color" id="button-color" value="#0000ff">
-
-                <label for="button-text-color">{{ __('bienvenida.color_texto_boton') }}</label>
-                <input type="color" id="button-text-color" value="#ffffff">
-
-                <label for="button-font-size">{{ __('bienvenida.tamano_texto_boton') }}</label>
-                <input type="number" id="button-font-size" value="16" min="10" max="50">
-
-                <label for="button-padding">{{ __('bienvenida.tamano_boton') }}</label>
-                <input type="number" id="button-padding" value="10" min="5" max="30">
-            </div>
-
-            <!-- Sección: Contenido -->
-            <div class="form-section">
-                <h3>{{ __('bienvenida.contenido') }}</h3>
-                <label for="content-bg-color">{{ __('bienvenida.color_fondo_contenido') }}</label>
-                <input type="color" id="content-bg-color" value="#ffffff">
-
-                <label for="content-bg-opacity">{{ __('bienvenida.transparencia_fondo_contenido') }}</label>
-                <input type="number" id="content-bg-opacity" value="80" min="0" max="100">
-
-                <label for="content-text-color">{{ __('bienvenida.color_texto_contenido') }}</label>
-                <input type="color" id="content-text-color" value="#000000">
-
-                <label for="title-font-size">{{ __('bienvenida.tamano_titulo') }}</label>
-                <input type="number" id="title-font-size" value="24" min="10" max="50">
-
-                <label for="paragraph-font-size">{{ __('bienvenida.tamano_parrafo') }}</label>
-                <input type="number" id="paragraph-font-size" value="16" min="10" max="50">
-
-                <div class="text-style-container">
-                    <label>
-                        <input type="checkbox" id="title-bold"> {{ __('bienvenida.negrita_titulo') }}
-                    </label>
-                    <label>
-                        <input type="checkbox" id="title-italic"> {{ __('bienvenida.cursiva_titulo') }}
-                    </label>
+                <!-- Sección: Botón -->
+                <div class="form-section">
+                    <h3>{{ __('bienvenida.boton_entrada') }}</h3>
+                    <label for="button-text">{{ __('bienvenida.texto_boton') }}</label>
+                    <input type="text" id="button-text" name="button_text" placeholder="{{ __('bienvenida.entrar_web') }}">
+                    
+                    <label for="button-color">{{ __('bienvenida.color_boton') }}</label>
+                    <input type="color" id="button-color" name="button_color" value="#0000ff">
+                    
+                    <label for="button-text-color">{{ __('bienvenida.color_texto_boton') }}</label>
+                    <input type="color" id="button-text-color" name="button_text_color" value="#ffffff">
+                    
+                    <label for="button-font-size">{{ __('bienvenida.tamano_fuente_boton') }}</label>
+                    <input type="range" id="button-font-size" name="button_font_size" min="12" max="24" value="16">
+                    <span id="button-font-size-value">16px</span>
+                    
+                    <label for="button-padding">{{ __('bienvenida.relleno_boton') }}</label>
+                    <input type="range" id="button-padding" name="button_padding" min="5" max="20" value="10">
+                    <span id="button-padding-value">10px</span>
                 </div>
 
-                <div class="text-style-container">
-                    <label>
-                        <input type="checkbox" id="paragraph-bold"> {{ __('bienvenida.negrita_parrafo') }}
-                    </label>
-                    <label>
-                        <input type="checkbox" id="paragraph-italic"> {{ __('bienvenida.cursiva_parrafo') }}
-                    </label>
+                <!-- Sección: Contenido -->
+                <div class="form-section">
+                    <h3>{{ __('bienvenida.personalizar_contenido') }}</h3>
+                    <label for="content-bg-color">{{ __('bienvenida.color_fondo_contenido') }}</label>
+                    <input type="color" id="content-bg-color" name="content_bg_color" value="#ffffff">
+                    
+                    <label for="content-bg-opacity">{{ __('bienvenida.opacidad_fondo') }}</label>
+                    <input type="range" id="content-bg-opacity" name="content_bg_opacity" min="0" max="100" value="80">
+                    <span id="content-bg-opacity-value">80%</span>
+                    
+                    <label for="content-text-color">{{ __('bienvenida.color_texto_contenido') }}</label>
+                    <input type="color" id="content-text-color" name="content_text_color" value="#000000">
                 </div>
-            </div>
+
+                <!-- Sección: Tipografía -->
+                <div class="form-section">
+                    <h3>{{ __('bienvenida.tipografia') }}</h3>
+                    
+                    <div class="typography-group">
+                        <h4>{{ __('bienvenida.titulo') }}</h4>
+                        <label for="title-font-size">{{ __('bienvenida.tamano_fuente') }}</label>
+                        <input type="range" id="title-font-size" name="title_font_size" min="16" max="36" value="24">
+                        <span id="title-font-size-value">24px</span>
+                        
+                        <div class="font-style-controls">
+                            <label>
+                                <input type="checkbox" id="title-bold" name="title_bold">
+                                {{ __('bienvenida.negrita') }}
+                            </label>
+                            <label>
+                                <input type="checkbox" id="title-italic" name="title_italic">
+                                {{ __('bienvenida.cursiva') }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="typography-group">
+                        <h4>{{ __('bienvenida.parrafo') }}</h4>
+                        <label for="paragraph-font-size">{{ __('bienvenida.tamano_fuente') }}</label>
+                        <input type="range" id="paragraph-font-size" name="paragraph_font_size" min="12" max="24" value="16">
+                        <span id="paragraph-font-size-value">16px</span>
+                        
+                        <div class="font-style-controls">
+                            <label>
+                                <input type="checkbox" id="paragraph-bold" name="paragraph_bold">
+                                {{ __('bienvenida.negrita') }}
+                            </label>
+                            <label>
+                                <input type="checkbox" id="paragraph-italic" name="paragraph_italic">
+                                {{ __('bienvenida.cursiva') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
     <div class="button-container">
         <button id="reset-button" class="reset-button">🗑️ {{ __('bienvenida.empezar_de_cero') }}</button>
-        <button id="continuar">{{ __('bienvenida.continuar') }}</button>
+        @if(isset($web))
+            <button id="guardar-cambios" class="primary-button">Guardar Cambios</button>
+        @endif
+        <button id="continuar" class="primary-button">{{ __('bienvenida.continuar') }}</button>
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal de confirmación para reset -->
 <div id="reset-modal" class="modal" style="display: none;">
     <div class="modal-overlay"></div>
     <div class="modal-content">
-        <h3 class="modal-title">{{ __('bienvenida.seguro_reset') }}</h3>
-        <p class="modal-message">{{ __('bienvenida.mensaje_reset') }}</p>
+        <h3 class="modal-title">¿Estás seguro?</h3>
+        <p class="modal-message">Esta acción borrará todo el diseño actual y no se puede deshacer.</p>
         <div class="modal-actions">
-            <button id="cancel-reset" class="modal-button cancel">{{ __('bienvenida.cancelar') }}</button>
-            <button id="confirm-reset" class="modal-button confirm">{{ __('bienvenida.borrar_todo') }}</button>
+            <button id="cancel-reset" class="modal-button cancel">Cancelar</button>
+            <button id="confirm-reset" class="modal-button confirm">Borrar todo</button>
         </div>
     </div>
 </div>
 @stop
 
 @push('scripts')
-    @vite(['resources/js/bienvenida.js'])
+@vite(['resources/js/bienvenida.js'])
+<script>
+@if(isset($web))
+// Configuración para modo edición
+window.webData = {
+    id: {{ $web->id }},
+    welcome_page_data: @json(is_string($web->welcome_page_data) ? json_decode($web->welcome_page_data, true) : $web->welcome_page_data ?? []),
+    isEditing: true,
+    updateUrl: '{{ route("webs.update.welcome", $web) }}',
+    editMainUrl: '{{ route("webs.edit.main", $web) }}',
+    editContactUrl: '{{ route("webs.edit.contact", $web) }}',
+    editUrl: '{{ route("webs.edit", $web) }}',
+    hasContactPage: {{ $web->hasContactPage() ? 'true' : 'false' }}
+};
+
+// Cargar imagen de fondo existente si existe
+@php
+    $welcomeData = is_string($web->welcome_page_data) ? json_decode($web->welcome_page_data, true) : $web->welcome_page_data ?? [];
+@endphp
+
+@if($welcomeData && isset($welcomeData['background_image_path']))
+document.addEventListener('DOMContentLoaded', function() {
+    const backgroundImage = document.getElementById('background-image');
+    if (backgroundImage) {
+        backgroundImage.src = '{{ asset("storage/" . $welcomeData["background_image_path"]) }}';
+        backgroundImage.style.display = 'block';
+    }
+});
+@endif
+
+@else
+// Modo creación normal
+window.webData = {
+    isEditing: false
+};
+
+// Configurar rutas para modo creación normal
+window.routes = {
+    principal: '{{ route("principal") }}'
+};
+
+@endif
+</script>
 @endpush

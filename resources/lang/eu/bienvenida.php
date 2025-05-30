@@ -52,5 +52,18 @@ return [
     'mensaje_reset' => 'Ekintza honek zure diseinu guztia ezabatuko du. Segitu nahi duzu?',
     'cancelar' => 'Ezeztatu',
     'borrar_todo' => 'Ezabatu dena',
+    'color_solido' => 'Kolore solidoa',
+    'logotipo' => 'Logotipoa',
+    'subir_logotipo' => 'Logotipoa igo',
+    'boton_entrada' => 'Sarrerako botoia',
+    'tamano_fuente_boton' => 'Botoiaren letra-tamaina',
+    'relleno_boton' => 'Botoiaren betegarria',
+    'personalizar_contenido' => 'Edukia pertsonalizatu',
+    'opacidad_fondo' => 'Atzealdearen opakutasuna',
+    'tipografia' => 'Tipografia',
+    'tamano_fuente' => 'Letra-tamaina',
+    'negrita' => 'Lodia',
+    'cursiva' => 'Etzana',
+    'parrafo' => 'Parrafoa',
 
 ];

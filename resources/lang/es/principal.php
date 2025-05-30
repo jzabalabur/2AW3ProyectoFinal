@@ -62,6 +62,7 @@ return [
     'cancelar' => 'Cancelar',
     'borrar_todo' => 'Borrar todo',
     'escribe_titulo' => 'Escribe título',
+    'texto_descriptivo' => 'Texto descriptivo'
 
 ];
     

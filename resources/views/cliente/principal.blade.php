@@ -1,45 +1,54 @@
 @extends('layouts.app')
 
-@section('title', __('principal.pagina_diseno'))
+@section('title', isset($web) ? 'Editar Página Principal - ' . $web->name : __('principal.pagina_diseno'))
 
 @push('styles')
-    <!--CSS especifico de la pagina-->
     @vite(['resources/css/diseno.css'])
     @vite(['resources/css/principal.css'])
 @endpush
 
 @section('content')
 <div class="main-container">
-        <!-- Barra de progreso -->
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress" style="width: 40%;"></div>
-            </div>
-            <div class="progress-steps">
-                <div class="progress-step completed">{{ __('principal.inicio') }}</div>
-                <div class="progress-step">{{ __('principal.bienvenida') }}</div>
-                <div class="progress-step">{{ __('principal.principal') }}</div>
-                <div class="progress-step">{{ __('principal.contacto') }}</div>
-                <div class="progress-step">{{ __('principal.publicar') }}</div>
-            </div>
+    @if(isset($web))
+        <!-- Navegación para edición -->
+        <div class="edit-navigation">
+            <a href="{{ route('webs.edit', $web) }}" class="back-link">← Volver a edición de web</a>
+            <h2>Editando página principal: {{ $web->name }}</h2>
         </div>
-        
-        <div class="design-container">
-            <!-- Contenedor de vista previa -->
-            <div class="preview-container">
-                <h3>{{ __('principal.vista_previa') }}</h3>
-                <div id="preview" class="preview"></div>
-            </div>
+    @endif
 
-            <!-- Contenedor del formulario -->
-            <div class="form-container">
-                <h3>{{ __('principal.disenar_pagina_principal') }}</h3>
-                <form id="design-form">
+    <!-- Barra de progreso -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress" style="width: 60%;"></div>
+        </div>
+        <div class="progress-steps">
+            <div class="progress-step completed">{{ __('principal.inicio') }}</div>
+            <div class="progress-step completed">{{ __('principal.bienvenida') }}</div>
+            <div class="progress-step active">{{ __('principal.principal') }}</div>
+            <div class="progress-step">{{ __('principal.contacto') }}</div>
+            <div class="progress-step">{{ __('principal.publicar') }}</div>
+        </div>
+    </div>
+    
+    <div class="design-container">
+        <!-- Contenedor de vista previa -->
+        <div class="preview-container">
+            <h3>{{ __('principal.vista_previa') }}</h3>
+            <div id="preview" class="preview"></div>
+        </div>
+
+        <!-- Contenedor del formulario -->
+        <div class="form-container">
+            <h3>{{ __('principal.disenar_pagina_principal') }}</h3>
+            <form id="main-form" enctype="multipart/form-data">
+                @csrf
                     <!-- Sección 1: Cabecera -->
                     <div class="form-section">
                         <h3>{{ __('principal.cabecera') }}</h3>
                         <label for="header-text">{{ __('principal.texto_header') }}</label>
-                        <input type="text" id="header-text" placeholder="{{ __('principal.escribe_texto_header') }}">
+                        <input type="text" id="header-text" name="header_text" 
+                           placeholder="{{ __('principal.escribe_texto_header') }}">
                         
                         <label for="header-bg-color">{{ __('principal.color_fondo') }}</label>
                         <input type="color" id="header-bg-color" value="#f8f8f8">
@@ -196,6 +205,9 @@
                             <!-- Botones -->
                             <div class="button-container">
                                 <button type="button" id="reset-btn" class="reset-button">🗑️ {{ __('principal.empezar_de_cero') }}</button>
+                                @if(isset($web))
+                                    <button id="guardar-cambios" class="primary-button">Guardar Cambios</button>
+                                @endif
                                 <button type="button" id="continue-btn" class="primary-button">{{ __('principal.continuar') }}</button>
                             </div>
     </div>
@@ -215,5 +227,30 @@
 @stop
 
 @push('scripts')
-    @vite(['resources/js/principal.js'])
+@vite(['resources/js/principal.js'])
+<script>
+@if(isset($web))
+// Configuración para modo edición
+window.webData = {
+    id: {{ $web->id }},
+    main_page_data: @json(is_string($web->main_page_data) ? json_decode($web->main_page_data, true) : $web->main_page_data ?? []),    isEditing: true,
+    updateUrl: '{{ route("webs.update.main", $web) }}',
+    editContactUrl: '{{ route("webs.edit.contact", $web) }}',
+    editUrl: '{{ route("webs.edit", $web) }}',
+    hasContactPage: {{ $web->hasContactPage() ? 'true' : 'false' }}
+};
+
+@else
+// Modo creación normal
+window.webData = {
+    isEditing: false
+};
+
+// Configurar rutas para modo creación normal
+window.routes = {
+    contacto: '{{ route("contacto") }}',
+    publicar: '{{ route("publicar") }}'
+};
+@endif
+</script>
 @endpush
