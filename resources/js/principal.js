@@ -1346,7 +1346,7 @@ async function loadImagesFromServer(data) {
         // Cargar logo si existe
         if (logoPath && logoInput) {
             try {
-                // CORREGIDO: Construir URL correcta
+                //Construir URL correcta
                 const fullLogoPath = logoPath.startsWith('http') ? logoPath : 
                                    logoPath.startsWith('/') ? logoPath :
                                    '/storage/' + logoPath;
@@ -1388,7 +1388,7 @@ async function loadImagesFromServer(data) {
         // Cargar imagen principal si existe
         if (photoPath && mainPhotoInput) {
             try {
-                // CORREGIDO: Construir URL correcta
+                // Construir URL correcta
                 const fullPhotoPath = photoPath.startsWith('http') ? photoPath : 
                                      photoPath.startsWith('/') ? photoPath :
                                      '/storage/' + photoPath;

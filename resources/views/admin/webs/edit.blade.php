@@ -3,7 +3,7 @@
 @section('title', 'Editar Web - ZabloAdmin')
 
 @section('content_header')
-    {{ Breadcrumbs::render('webs.edit', $web) }}
+    {{ Breadcrumbs::render('admin.webs.edit', $web) }}
 @stop
 
 @section('content')

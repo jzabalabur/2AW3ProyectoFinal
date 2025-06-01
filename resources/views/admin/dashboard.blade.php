@@ -4,8 +4,8 @@
 
 @section('content_header')
     {{ Breadcrumbs::render('admin.dashboard') }}
-    <h1 class="text-3xl font-bold text-gray-800">Dashboard de Administración</h1>
-    <p class="text-gray-600 mt-2">Bienvenido al panel de administración. Desde aquí puedes gestionar los usuarios y las webs registradas en el sistema.</p>
+    <h1 class="text-3xl font-bold text-gray-800">{{ __('dashboard.dashboard_titu') }}</h1>
+    <p class="text-gray-600 mt-2">{{ __('dashboard.dashboard_desc') }}</p>
 @stop
 
 @section('content')
@@ -22,9 +22,9 @@
                 </div>
                 <!-- Texto -->
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800">Usuarios</h2>
+                    <h2 class="text-xl font-bold text-gray-800">{{ __('dashboard.usuarios') }}</h2>
                     <p class="text-gray-600 mt-2">
-                        Gestiona los usuarios del sistema. Aquí puedes ver, crear, editar y eliminar usuarios, así como asignar roles y permisos.
+                        {{ __('dashboard.usuarios_desc') }}
                     </p>
                 </div>
             </div>
@@ -40,9 +40,9 @@
                 </div>
                 <!-- Texto -->
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800">Webs</h2>
+                    <h2 class="text-xl font-bold text-gray-800">{{ __('dashboard.webs') }}</h2>
                     <p class="text-gray-600 mt-2">
-                        Administra las webs registradas. Desde aquí puedes gestionar dominios, configuraciones y estadísticas de las webs.
+                        {{ __('dashboard.webs_desc') }}
                     </p>
                 </div>
             </div>

@@ -3,13 +3,13 @@
 @section('title', 'Detalles del Usuario - ZabloAdmin')
 
 @section('content_header')
-    {{ Breadcrumbs::render('usuarios.show', $user) }}
+    {{ Breadcrumbs::render('admin.usuarios.show', $user) }}
 @stop
 
 @section('content')
 
 <div class="mx-auto px-6">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Detalles del Usuario</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">{{ __('dashboard.usuarios_detalle') }}</h2>
     @if (session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
         {{ session('success') }}
@@ -25,7 +25,7 @@
         <div class="mb-6">
             <a href="{{ route('admin.users.index') }}" 
                class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
-                ← Volver a la lista
+                ← {{ __('dashboard.volver') }}
             </a>
         </div>
 
@@ -37,22 +37,22 @@
             </div>
 
             <div class="border-b border-gray-200 pb-4">
-                <h3 class="text-lg font-semibold text-gray-700">Nombre</h3>
+                <h3 class="text-lg font-semibold text-gray-700">{{ __('dashboard.nombre') }}</h3>
                 <p class="text-gray-900">{{ $user->name }}</p>
             </div>
 
             <div class="border-b border-gray-200 pb-4">
-                <h3 class="text-lg font-semibold text-gray-700">Email</h3>
+                <h3 class="text-lg font-semibold text-gray-700">{{ __('dashboard.email') }}</h3>
                 <p class="text-gray-900">{{ $user->email }}</p>
             </div>
 
             <div class="border-b border-gray-200 pb-4">
-                <h3 class="text-lg font-semibold text-gray-700">Fecha de Creación</h3>
+                <h3 class="text-lg font-semibold text-gray-700">{{ __('dashboard.creado') }}</h3>
                 <p class="text-gray-900">{{ $user->created_at->format('d/m/Y H:i:s') }}</p>
             </div>
 
             <div class="border-b border-gray-200 pb-4">
-                <h3 class="text-lg font-semibold text-gray-700">Última Actualización</h3>
+                <h3 class="text-lg font-semibold text-gray-700">{{ __('dashboard.modificado') }}</h3>
                 <p class="text-gray-900">{{ $user->updated_at->format('d/m/Y H:i:s') }}</p>
             </div>
         </div>
@@ -63,14 +63,14 @@
         <div class="mt-6 flex space-x-4">
             <a href="{{ route('admin.users.edit', $user) }}" 
                class="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
-                ✏️ Editar
+                ✏️ {{ __('dashboard.editar') }}
             </a>
             <!-- Modal de Confirmación -->
             <div x-data="{ open: false, url: '' }" x-cloak>
                 <!-- Botón para abrir el modal -->
                 <button x-on:click="open = true; url = '{{ route('admin.users.destroy', $user) }}'" 
                         class="inline-flex items-center bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-2 rounded-lg shadow-md transition">
-                    🗑️ Eliminar
+                    🗑️ {{ __('dashboard.eliminar') }}
                 </button>
 
                 <!-- Overlay del modal -->
@@ -79,21 +79,21 @@
                 <!-- Contenido del modal -->
                 <div x-show="open" class="fixed inset-0 flex items-center justify-center z-50">
                     <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">¿Estás seguro?</h3>
-                        <p class="text-gray-700 mb-6">Esta acción eliminará al usuario permanentemente. ¿Deseas continuar?</p>
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('dashboard.seguro') }}</h3>
+                        <p class="text-gray-700 mb-6">{{ __('dashboard.seguro_mensaje') }}</p>
 
                         <!-- Botones de acción -->
                         <div class="flex justify-end space-x-4">
                             <button x-on:click="open = false" 
                                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow-md transition">
-                                Cancelar
+                                {{ __('dashboard.cancelar') }}
                             </button>
                             <form :action="url" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 
                                         class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition">
-                                    Eliminar
+                                    {{ __('dashboard.confirmar') }}
                                 </button>
                             </form>
                         </div>
