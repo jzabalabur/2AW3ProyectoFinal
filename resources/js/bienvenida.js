@@ -99,76 +99,15 @@ function saveImageToDB(id, file) {
             reject(event.target.error);
         };
 
-        reader.readAsDataURL(file); // primero leemos el archivo
+        reader.readAsDataURL(file); 
     });
 }
 
-// function saveImageToDB(id, file) {
-//     return new Promise((resolve, reject) => {
-//         // Verificar que la base de datos esté inicializada
-//         if (!db) {
-//             console.error('Base de datos no inicializada');
-//             reject('Base de datos no inicializada');
-//             return;
-//         }
-        
-//         const transaction = db.transaction([STORE_NAME], 'readwrite');
-//         const store = transaction.objectStore(STORE_NAME);
-        
-//         const reader = new FileReader();
-//         // reader.onload = (event) => {
-//         //     const request = store.put({
-//         //         id: id,
-//         //         data: event.target.result,
-//         //         type: file.type,
-//         //         name: file.name,
-//         //         lastModified: file.lastModified
-//         //     });
-
-//             reader.onload = (event) => {
-//             const imageData = {
-//                 id: id,
-//                 data: event.target.result,
-//                 type: file.type,
-//                 name: file.name,
-//                 lastModified: file.lastModified
-//             };
-
-//             const request = store.put(imageData);
-
-//             request.onsuccess = () => {
-//                 console.log(`✅ Imagen ${id} guardada en IndexedDB`);
-//                 resolve();
-//             };
-//             request.onerror = (event) => {
-//                 console.error(`❌ Error al guardar imagen ${id}:`, event.target.error);
-//                 reject(event.target.error);
-//             };
-//         };
-//         reader.onerror = (event) => {
-//             console.error(`❌ Error al leer archivo ${id}:`, event.target.error);
-//             reject(event.target.error);
-//         };
-//         reader.readAsDataURL(file);
-//     });
-// }
 
 initDB().catch(console.error);
 
 if (logoInput) {
-    // logoInput.addEventListener('change', () => {
-    //     const file = logoInput.files[0];
-    //     if (file) {
-    //         // Asegurar que la DB esté inicializada antes de guardar
-    //         if (db) {
-    //             saveImageToDB('logoBienvenida', file).catch(console.error);
-    //         } else {
-    //             initDB().then(() => {
-    //                 saveImageToDB('logoBienvenida', file).catch(console.error);
-    //             }).catch(console.error);
-    //         }
-    //     }
-    // });
+
     logoInput.addEventListener('change', async () => {
     const file = logoInput.files[0];
     if (!file) return;
@@ -183,19 +122,7 @@ if (logoInput) {
 }
 
 if (backgroundImageInput) {
-    // backgroundImageInput.addEventListener('change', () => {
-    //     const file = backgroundImageInput.files[0];
-    //     if (file) {
-    //         // Asegurar que la DB esté inicializada antes de guardar
-    //         if (db) {
-    //             saveImageToDB('background', file).catch(console.error);
-    //         } else {
-    //             initDB().then(() => {
-    //                 saveImageToDB('background', file).catch(console.error);
-    //             }).catch(console.error);
-    //         }
-    //     }
-    // });
+  
     backgroundImageInput.addEventListener('change', async () => {
     const file = backgroundImageInput.files[0];
     if (!file) return;

@@ -301,7 +301,7 @@ async function updatePreview() {
         contactDataContainer.appendChild(contactInfoContainer);
         mainContent.appendChild(contactDataContainer);
         
-        // Mapa (debajo de la información de contacto)
+        // Mapa 
         if (showMapCheckbox && showMapCheckbox.checked && mapAddressInput && mapAddressInput.value.trim()) {
             const mapContainer = document.createElement('div');
             mapContainer.style.width = '100%';
@@ -323,7 +323,7 @@ async function updatePreview() {
             mainContent.appendChild(mapContainer);
         }
         
-        // Formulario de contacto (debajo del mapa)
+        // Formulario de contacto 
         const contactForm = document.createElement('form');
         contactForm.style.width = '100%';
         contactForm.style.maxWidth = '1000px';

@@ -38,7 +38,7 @@
                 </div>
                 
                 <div id="domain-result" class="domain-result hidden">
-                    <!-- Resultado de la comprobación aparecerá aquí -->
+                    <!-- Resultado de la comprobación -->
                 </div>
                 
                 <!-- Botones de acción -->
@@ -51,7 +51,7 @@
     </div>
 </main>
 
-<!-- Scripts para debugging (remover en producción) -->
+
 <script>
     // Debug: Verificar que tenemos datos en localStorage
     console.log('LocalStorage Data Check:');

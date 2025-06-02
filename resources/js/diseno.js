@@ -235,7 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('mainPageData');
         localStorage.removeItem('welcomeData');
         localStorage.removeItem('contactData');
-        // NO limpiar welcomeMessage, contactPage, y webName porque los necesitamos
     }
     
     console.log('=== DISENO.JS INICIALIZADO ===');

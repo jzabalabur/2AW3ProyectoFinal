@@ -178,7 +178,6 @@ function listAllImageKeys() {
                     try {
                         const image = await getImageFromDB(db, key);
                         if (image && image.data) {
-                            // Verificar que la imagen tiene el formato correcto
                             if (typeof image.data === 'string' && image.data.startsWith('data:image/')) {
                                 images[key] = image.data.split(',')[1]; // Remover prefijo base64
                                 console.log(`→ Imagen ${key} procesada`);
@@ -281,7 +280,6 @@ function listAllImageKeys() {
             publishBtn.textContent = '🚀 Publicando...';
             
             try {
-                // Usar la misma lógica que guardar borrador pero con dominio
                 const csrfToken = document.querySelector('meta[name="csrf-token"]');
                 if (!csrfToken) {
                     throw new Error('CSRF token no encontrado. Recarga la página.');

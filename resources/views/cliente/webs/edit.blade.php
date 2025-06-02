@@ -351,15 +351,14 @@
 
 .edit-card p {
     color: rgba(255, 255, 255, 0.8);
-    margin-bottom: auto; /* Esto empuja el botón hacia abajo */
+    margin-bottom: auto; 
     line-height: 1.5;
-    flex-grow: 1; /* El párrafo ocupa el espacio disponible */
+    flex-grow: 1; 
 }
 
 .edit-btn {
-    margin-top: 1.5rem; /* Separación del texto */
-    align-self: flex-start; /* Alinear al inicio, no estirar */
-    /* ... resto de estilos del botón ... */
+    margin-top: 1.5rem;
+    align-self: flex-start; 
 }
 </style>
 @endpush

@@ -91,7 +91,6 @@
 @vite(['resources/js/diseno.js'])
 <script>
 @if(isset($web))
-// Modo edición - NO limpiar localStorage
 // Datos existentes de la web para modo edición
 window.webData = {
     id: {{ $web->id }},
@@ -104,7 +103,6 @@ window.webData = {
     editUrl: '{{ route("webs.edit", $web) }}'
 };
 
-// Sobrescribir función proceedToNextStep para modo edición
 function proceedToNextStep() {
     console.log("Navegando en modo edición");
     const welcomeMessage = document.getElementById('welcome-message').checked;
@@ -169,7 +167,7 @@ document.getElementById('close-modal').addEventListener('click', function() {
 });
 
 @else
-// Modo creación normal - Limpiar localStorage SOLO aquí
+// Modo creación normal - Limpiar localStorage
 localStorage.removeItem('mainPageData');
 localStorage.removeItem('welcomeData');
 localStorage.removeItem('contactData');
@@ -181,7 +179,6 @@ window.webData = {
     isEditing: false
 };
 
-// IMPORTANTE: Sobrescribir proceedToNextStep para guardar configuración en localStorage
 function proceedToNextStep() {
     const welcomeMessage = document.getElementById('welcome-message').checked;
     const contactPage = document.getElementById('contact-page').checked;

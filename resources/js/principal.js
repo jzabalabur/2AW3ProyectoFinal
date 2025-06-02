@@ -205,7 +205,6 @@ function getIconSvg(iconName) {
 
 // Función para actualizar la vista previa
 function updatePreview() {
-    // [Mantener toda la función updatePreview tal como está - no cambiar nada]
     const newPage = document.createElement('div');
     newPage.style.display = 'flex';
     newPage.style.flexDirection = 'column';
@@ -829,10 +828,10 @@ function loadExistingData(data) {
     // Cargar archivos de imagen en los inputs (async)
     loadImagesFromServer(data).then(() => {
         console.log('✅ Imágenes cargadas completamente en página principal');
-        updatePreview(); // Actualizar preview después de cargar imágenes
+        updatePreview(); 
     }).catch(error => {
         console.error('❌ Error al cargar imágenes en página principal:', error);
-        updatePreview(); // Actualizar preview aunque falle la carga de imágenes
+        updatePreview(); a
     });
 
     console.log('📥 Finalizando carga de datos de página principal - actualizando preview');
@@ -1059,7 +1058,7 @@ async function loadSavedData() {
         console.error('Error al cargar los datos guardados:', error);
     }
 }
-// Función de debug para página principal - ACTUALIZADA
+// Función de debug para página principal 
 function debugMainDataLoading() {
     console.log('=== DEBUG PRINCIPAL: Verificando carga de datos ===');
     

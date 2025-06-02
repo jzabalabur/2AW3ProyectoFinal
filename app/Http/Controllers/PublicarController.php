@@ -39,7 +39,6 @@ class PublicarController extends Controller
             $webPath = public_path('webs/' . $domain);
             $name = $this->extractDomainName($domain);
             
-            // DEBUG: Log completo de los datos recibidos
             \Log::info('=== DATOS RECIBIDOS EN PUBLISH ===', [
                 'domain' => $domain,
                 'user_id' => $user_id,
@@ -191,7 +190,7 @@ class PublicarController extends Controller
     
 
     
-                    //PRUEBAS publicar en apache y bind---------------------------------------------
+        //PRUEBAS publicar en apache y bind---------------------------------------------
             try {
         //Configurar Apache
                 $webPathApache = "/home/isard/proyectoFinal/public/webs/$domain";
@@ -262,7 +261,7 @@ class PublicarController extends Controller
             \Log::info('=== PUBLICACIÓN COMPLETADA EXITOSAMENTE ===');
     
             // Determinar la URL inicial según si hay página de bienvenida
-            $initialUrl = url('webs/' . $domain . '/main.html'); // Por defecto main.html
+            $initialUrl = url('webs/' . $domain . '/main.html'); 
     
             // Si hay página de bienvenida, empezar por welcome.html
             if (!empty($data['welcomeData'])) {
@@ -294,7 +293,7 @@ class PublicarController extends Controller
 
     }
 
-    // Método para republicar una web existente (nuevo)
+    // Método para republicar una web existente
     public function republish(Web $web)
     {
         try {
@@ -356,7 +355,6 @@ class PublicarController extends Controller
         }
     }
 
-    // Resto de métodos existentes (mantener todos los métodos de generación HTML/CSS)
     
     private function generateMainHtml($data, $images)
     {
@@ -367,32 +365,32 @@ class PublicarController extends Controller
         $footerText = isset($data['footer']['text']) ? $data['footer']['text'] : '';
         
         $html = '<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>' . $headerText . '</title>
-    <link rel="stylesheet" href="css/main.css">
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            ' . $this->generateLogoHtml($logoUrl, $logoPosition) . '
-            <h1>' . $headerText . '</h1>
-        </div>
-    </header>
-    
-    ' . $this->generateNavbarHtml() . '
-    
-    <main>
-        ' . $this->generateMainContentHtml($data, $mainPhotoUrl) . '
-    </main>
-    
-    <footer>
-        <p>' . $footerText . '</p>
-    </footer>
-</body>
-</html>';
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>' . $headerText . '</title>
+            <link rel="stylesheet" href="css/main.css">
+        </head>
+        <body>
+            <header>
+                <div class="header-container">
+                    ' . $this->generateLogoHtml($logoUrl, $logoPosition) . '
+                    <h1>' . $headerText . '</h1>
+                </div>
+            </header>
+            
+            ' . $this->generateNavbarHtml() . '
+            
+            <main>
+                ' . $this->generateMainContentHtml($data, $mainPhotoUrl) . '
+            </main>
+            
+            <footer>
+                <p>' . $footerText . '</p>
+            </footer>
+        </body>
+        </html>';
 
         return $html;
     }
@@ -406,9 +404,9 @@ class PublicarController extends Controller
         
         if ($mainPhotoUrl) {
             $content .= '<div class="main-photo-container">
-    <img src="' . $mainPhotoUrl . '" alt="Foto principal">
-    <h2>' . $photoTitle . '</h2>
-</div>';
+                <img src="' . $mainPhotoUrl . '" alt="Foto principal">
+                <h2>' . $photoTitle . '</h2>
+            </div>';
         }
         
         if ($photoDesc) {
@@ -445,14 +443,14 @@ class PublicarController extends Controller
             $icon = isset($column['icon']) ? htmlspecialchars($column['icon']) : 'star';
             $text = isset($column['text']) ? htmlspecialchars($column['text']) : '';
             $columns .= '<div class="feature-column">
-    <div class="feature-icon">' . $this->getIconSvg($icon) . '</div>
-    <p>' . $text . '</p>
-</div>';
+                <div class="feature-icon">' . $this->getIconSvg($icon) . '</div>
+                <p>' . $text . '</p>
+            </div>';
         }
         
         return '<div class="feature-module">
-    ' . $columns . '
-</div>';
+            ' . $columns . '
+            </div>';
     }
 
     private function generateVideoHtml($data)
@@ -463,9 +461,9 @@ class PublicarController extends Controller
         if (!$videoId) return '';
         
         return '<div class="video-container">
-    <iframe src="https://www.youtube.com/embed/' . $videoId . '" frameborder="0" allowfullscreen></iframe>
-    <p>' . $description . '</p>
-</div>';
+                <iframe src="https://www.youtube.com/embed/' . $videoId . '" frameborder="0" allowfullscreen></iframe>
+                <p>' . $description . '</p>
+            </div>';
     }
 
     private function generateMapHtml($data)
@@ -476,9 +474,9 @@ class PublicarController extends Controller
         if (!$address) return '';
         
         return '<div class="map-container">
-    <iframe src="https://maps.google.com/maps?q=' . $address . '&output=embed"></iframe>
-    <p>' . $description . '</p>
-</div>';
+                <iframe src="https://maps.google.com/maps?q=' . $address . '&output=embed"></iframe>
+                <p>' . $description . '</p>
+            </div>';
     }
 
     private function generateLogoHtml($logoUrl, $position)
@@ -486,8 +484,8 @@ class PublicarController extends Controller
         if (!$logoUrl) return '';
         
         return '<div class="logo" style="float: ' . $position . '">
-    <img src="' . $logoUrl . '" alt="Logo">
-</div>';
+                <img src="' . $logoUrl . '" alt="Logo">
+            </div>';
     }
 
     private function generateNavbarHtml()
@@ -497,9 +495,9 @@ class PublicarController extends Controller
         if (!$contactPage) return '';
         
         return '<nav>
-    <a href="main.html">Inicio</a>
-    <a href="contact.html">Contacto</a>
-</nav>';
+                <a href="main.html">Inicio</a>
+                <a href="contact.html">Contacto</a>
+            </nav>';
     }
 
     private function generateMainCss($data)
@@ -513,138 +511,138 @@ class PublicarController extends Controller
         $fontFamily = isset($data['fontFamily']) ? $data['fontFamily'] : 'Arial, sans-serif';
         
         return 'body {
-    font-family: ' . $fontFamily . ';
-    background-color: ' . $bgColor . ';
-    color: ' . $textColor . ';
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
-}
+                font-family: ' . $fontFamily . ';
+                background-color: ' . $bgColor . ';
+                color: ' . $textColor . ';
+                margin: 0;
+                padding: 0;
+                line-height: 1.6;
+            }
 
-header {
-    background-color: ' . $headerBgColor . ';
-    padding: 15px;
-    color: ' . $headerTextColor . ';
-}
+            header {
+                background-color: ' . $headerBgColor . ';
+                padding: 15px;
+                color: ' . $headerTextColor . ';
+            }
 
-.header-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+            .header-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
 
-.logo img {
-    max-height: 60px;
-    width: auto;
-}
+            .logo img {
+                max-height: 60px;
+                width: auto;
+            }
 
-nav {
-    background-color: ' . $this->lightenColor($headerBgColor, 20) . ';
-    padding: 10px 0;
-    text-align: center;
-}
+            nav {
+                background-color: ' . $this->lightenColor($headerBgColor, 20) . ';
+                padding: 10px 0;
+                text-align: center;
+            }
 
-nav a {
-    color: ' . $textColor . ';
-    text-decoration: none;
-    padding: 8px 16px;
-    margin: 0 5px;
-}
+            nav a {
+                color: ' . $textColor . ';
+                text-decoration: none;
+                padding: 8px 16px;
+                margin: 0 5px;
+            }
 
-nav a:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
+            nav a:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
 
-main {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+            main {
+                padding: 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
 
-.main-photo-container {
-    position: relative;
-    margin-bottom: 20px;
-}
+            .main-photo-container {
+                position: relative;
+                margin-bottom: 20px;
+            }
 
-.main-photo-container img {
-    width: 100%;
-    aspect-ratio: 4 / 1;
-    object-fit: cover;
-}
+            .main-photo-container img {
+                width: 100%;
+                aspect-ratio: 4 / 1;
+                object-fit: cover;
+            }
 
-.main-photo-container h2 {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 10px 20px;
-    border-radius: 5px;
-}
+            .main-photo-container h2 {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: 10px 20px;
+                border-radius: 5px;
+            }
 
-.photo-description {
-    margin: 15px 0;
-    padding: 0 30px;
-}
+            .photo-description {
+                margin: 15px 0;
+                padding: 0 30px;
+            }
 
-.feature-module {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    margin: 20px 0;
-    background-color: #f8fafc;
-    border-radius: 8px;
-}
+            .feature-module {
+                display: flex;
+                justify-content: space-between;
+                padding: 20px;
+                margin: 20px 0;
+                background-color: #f8fafc;
+                border-radius: 8px;
+            }
 
-.feature-column {
-    flex: 1;
-    padding: 0 15px;
-    text-align: center;
-}
+            .feature-column {
+                flex: 1;
+                padding: 0 15px;
+                text-align: center;
+            }
 
-.feature-icon svg {
-    width: 48px;
-    height: 48px;
-}
+            .feature-icon svg {
+                width: 48px;
+                height: 48px;
+            }
 
-.video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    margin: 20px 0;
-    overflow: hidden;
-}
+            .video-container {
+                position: relative;
+                padding-bottom: 56.25%;
+                height: 0;
+                margin: 20px 0;
+                overflow: hidden;
+            }
 
-.video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
+            .video-container iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
 
-.map-container {
-    height: 300px;
-    margin: 20px 0;
-    border-radius: 8px;
-    overflow: hidden;
-}
+            .map-container {
+                height: 300px;
+                margin: 20px 0;
+                border-radius: 8px;
+                overflow: hidden;
+            }
 
-.map-container iframe {
-    width: 100%;
-    height: 100%;
-}
+            .map-container iframe {
+                width: 100%;
+                height: 100%;
+            }
 
-footer {
-    background-color: ' . $footerBgColor . ';
-    padding: 15px;
-    text-align: center;
-    color: ' . $footerTextColor . ';
-    margin-top: auto;
-}';
+            footer {
+                background-color: ' . $footerBgColor . ';
+                padding: 15px;
+                text-align: center;
+                color: ' . $footerTextColor . ';
+                margin-top: auto;
+            }';
     }
 
     private function generateWelcomeHtml($data, $images)
@@ -665,26 +663,26 @@ footer {
             "background-color: " . $bgColor . ";";
         
         $html = '<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>' . $title . '</title>
-    <link rel="stylesheet" href="css/welcome.css">
-</head>
-<body style="' . $bgStyle . '">
-    <div class="welcome-container">
-        ' . $this->generateWelcomeLogoHtml($logoUrl, $logoSize, $logoPosition) . '
-        <div class="welcome-content">
-            <h1>' . $title . '</h1>
-            <p>' . $message . '</p>
-            <a href="main.html" class="enter-button" style="background-color: ' . $buttonColor . '; color: ' . $buttonTextColor . ';">
-                ' . $buttonText . '
-            </a>
-        </div>
-    </div>
-</body>
-</html>';
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>' . $title . '</title>
+                <link rel="stylesheet" href="css/welcome.css">
+            </head>
+            <body style="' . $bgStyle . '">
+                <div class="welcome-container">
+                    ' . $this->generateWelcomeLogoHtml($logoUrl, $logoSize, $logoPosition) . '
+                    <div class="welcome-content">
+                        <h1>' . $title . '</h1>
+                        <p>' . $message . '</p>
+                        <a href="main.html" class="enter-button" style="background-color: ' . $buttonColor . '; color: ' . $buttonTextColor . ';">
+                            ' . $buttonText . '
+                        </a>
+                    </div>
+                </div>
+            </body>
+            </html>';
 
         return $html;
     }
@@ -705,8 +703,8 @@ footer {
         }
         
         return '<div class="logo-container" style="' . $containerStyle . '">
-    <img src="' . $logoUrl . '" alt="Logo" style="' . $style . '">
-</div>';
+                <img src="' . $logoUrl . '" alt="Logo" style="' . $style . '">
+            </div>';
     }
 
     private function generateWelcomeCss($data)
@@ -727,168 +725,168 @@ footer {
         $b = $this->hexToRgb($contentBgColor, 'b');
         
         return 'body {
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: ' . $fontFamily . ';
-}
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: ' . $fontFamily . ';
+        }
 
-.welcome-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px;
-    max-width: 800px;
-    margin: 0 auto;
-}
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-.logo-container {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    margin-bottom: 30px;
-}
+        .logo-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
 
-.welcome-content {
-    background-color: rgba(' . $r . ', ' . $g . ', ' . $b . ', ' . $contentBgOpacity . ');
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    color: ' . $contentTextColor . ';
-}
+        .welcome-content {
+            background-color: rgba(' . $r . ', ' . $g . ', ' . $b . ', ' . $contentBgOpacity . ');
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: ' . $contentTextColor . ';
+        }
 
-.welcome-content h1 {
-    font-size: ' . $titleFontSize . ';
-    font-weight: ' . $titleBold . ';
-    font-style: ' . $titleItalic . ';
-    margin-top: 0;
-}
+        .welcome-content h1 {
+            font-size: ' . $titleFontSize . ';
+            font-weight: ' . $titleBold . ';
+            font-style: ' . $titleItalic . ';
+            margin-top: 0;
+        }
 
-.welcome-content p {
-    font-size: ' . $paragraphFontSize . ';
-    font-weight: ' . $paragraphBold . ';
-    font-style: ' . $paragraphItalic . ';
-    margin-bottom: 30px;
-}
+        .welcome-content p {
+            font-size: ' . $paragraphFontSize . ';
+            font-weight: ' . $paragraphBold . ';
+            font-style: ' . $paragraphItalic . ';
+            margin-bottom: 30px;
+        }
 
-.enter-button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+        .enter-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-.enter-button:hover {
-    opacity: 0.9;
-}';
+        .enter-button:hover {
+            opacity: 0.9;
+        }';
     }
 
     private function generateContactHtml($data)
-{
-    $showMap = isset($data['showMap']) ? $data['showMap'] : false;
-    $mapAddress = isset($data['mapAddress']) ? htmlspecialchars($data['mapAddress']) : '';
-    $contactInfo = isset($data['contactInfo']) ? $data['contactInfo'] : [];
-    
-    // Generar items de contacto con estilo mejorado
-    $contactItems = '';
-    $hasContactInfo = false;
-    
-    foreach ($contactInfo as $type => $info) {
-        if (isset($info['selected']) && $info['selected'] && !empty($info['text'])) {
-            $hasContactInfo = true;
-            $title = ucfirst($type);
-            $text = htmlspecialchars($info['text']);
-            $contactItems .= '<div class="contact-item">
-    <div class="contact-title">' . $title . '</div>
-    <div class="contact-text">' . $text . '</div>
-</div>';
-        }
+    {
+        $showMap = isset($data['showMap']) ? $data['showMap'] : false;
+        $mapAddress = isset($data['mapAddress']) ? htmlspecialchars($data['mapAddress']) : '';
+        $contactInfo = isset($data['contactInfo']) ? $data['contactInfo'] : [];
+        
+        // Generar items de contacto con estilo mejorado
+        $contactItems = '';
+        $hasContactInfo = false;
+        
+        foreach ($contactInfo as $type => $info) {
+            if (isset($info['selected']) && $info['selected'] && !empty($info['text'])) {
+                $hasContactInfo = true;
+                $title = ucfirst($type);
+                $text = htmlspecialchars($info['text']);
+                $contactItems .= '<div class="contact-item">
+                    <div class="contact-title">' . $title . '</div>
+                    <div class="contact-text">' . $text . '</div>
+                </div>';
+            }
     }
     
     // Si no hay información de contacto, mostrar placeholder
     if (!$hasContactInfo) {
         $contactItems = '<div class="contact-placeholder">
-    <div class="contact-placeholder-icon">📞</div>
-    <div class="contact-placeholder-text">Información de contacto no disponible</div>
-</div>';
+                <div class="contact-placeholder-icon">📞</div>
+                <div class="contact-placeholder-text">Información de contacto no disponible</div>
+            </div>';
     }
     
     // Sección del mapa
     $mapSection = '';
     if ($showMap && $mapAddress) {
         $mapSection = '<div class="map-section">
-    <h2 class="map-title">Nuestra Ubicación</h2>
-    <p class="map-address">' . htmlspecialchars($mapAddress) . '</p>
-    <div class="map-container">
-        <iframe src="https://maps.google.com/maps?q=' . urlencode($mapAddress) . '&output=embed" 
-                frameborder="0" allowfullscreen></iframe>
-    </div>
-</div>';
+                <h2 class="map-title">Nuestra Ubicación</h2>
+                <p class="map-address">' . htmlspecialchars($mapAddress) . '</p>
+                <div class="map-container">
+                    <iframe src="https://maps.google.com/maps?q=' . urlencode($mapAddress) . '&output=embed" 
+                            frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>';
     }
     
     $html = '<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacto</title>
-    <link rel="stylesheet" href="css/contact.css">
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <h1>Contacto</h1>
-        </div>
-    </header>
-    
-    <nav>
-        <a href="main.html">Inicio</a>
-        <a href="contact.html">Contacto</a>
-    </nav>
-    
-    <main class="contact-main">
-        <div class="contact-content">
-            <div class="contact-info-section">
-                <h2 class="section-title">Información de Contacto</h2>
-                <div class="contact-items-container">
-                    ' . $contactItems . '
-                </div>
-            </div>
-            
-            ' . $mapSection . '
-            
-            <div class="contact-form-section">
-                <h2 class="section-title">Envíanos un mensaje</h2>
-                <form class="contact-form">
-                    <div class="form-group">
-                        <label for="email" class="form-label">Correo electrónico:</label>
-                        <input type="email" id="email" class="form-input" required>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Contacto</title>
+                <link rel="stylesheet" href="css/contact.css">
+            </head>
+            <body>
+                <header>
+                    <div class="header-container">
+                        <h1>Contacto</h1>
                     </div>
-                    <div class="form-group">
-                        <label for="subject" class="form-label">Asunto:</label>
-                        <input type="text" id="subject" class="form-input" required>
+                </header>
+                
+                <nav>
+                    <a href="main.html">Inicio</a>
+                    <a href="contact.html">Contacto</a>
+                </nav>
+                
+                <main class="contact-main">
+                    <div class="contact-content">
+                        <div class="contact-info-section">
+                            <h2 class="section-title">Información de Contacto</h2>
+                            <div class="contact-items-container">
+                                ' . $contactItems . '
+                            </div>
+                        </div>
+                        
+                        ' . $mapSection . '
+                        
+                        <div class="contact-form-section">
+                            <h2 class="section-title">Envíanos un mensaje</h2>
+                            <form class="contact-form">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Correo electrónico:</label>
+                                    <input type="email" id="email" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="subject" class="form-label">Asunto:</label>
+                                    <input type="text" id="subject" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message" class="form-label">Mensaje:</label>
+                                    <textarea id="message" class="form-textarea" required></textarea>
+                                </div>
+                                <button type="submit" class="form-submit">Enviar Mensaje</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="message" class="form-label">Mensaje:</label>
-                        <textarea id="message" class="form-textarea" required></textarea>
-                    </div>
-                    <button type="submit" class="form-submit">Enviar Mensaje</button>
-                </form>
-            </div>
-        </div>
-    </main>
-    
-    <footer>
-        <p>© 2023 Todos los derechos reservados</p>
-    </footer>
-</body>
-</html>';
+                </main>
+                
+                <footer>
+                    <p>© 2023 Todos los derechos reservados</p>
+                </footer>
+            </body>
+            </html>';
 
     return $html;
 }
@@ -903,273 +901,273 @@ private function generateContactCss($mainData)
     $fontFamily = isset($mainData['fontFamily']) ? $mainData['fontFamily'] : 'Arial, sans-serif';
     
     return 'body {
-    font-family: ' . $fontFamily . ';
-    background-color: ' . $bgColor . ';
-    color: ' . $textColor . ';
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
-}
+            font-family: ' . $fontFamily . ';
+            background-color: ' . $bgColor . ';
+            color: ' . $textColor . ';
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-header {
-    background-color: ' . $headerBgColor . ';
-    padding: 15px;
-    color: ' . $headerTextColor . ';
-}
+        header {
+            background-color: ' . $headerBgColor . ';
+            padding: 15px;
+            color: ' . $headerTextColor . ';
+        }
 
-.header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
-}
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
 
-nav {
-    background-color: ' . $this->lightenColor($headerBgColor, 20) . ';
-    padding: 10px 0;
-    text-align: center;
-}
+        nav {
+            background-color: ' . $this->lightenColor($headerBgColor, 20) . ';
+            padding: 10px 0;
+            text-align: center;
+        }
 
-nav a {
-    color: ' . $textColor . ';
-    text-decoration: none;
-    padding: 8px 16px;
-    margin: 0 5px;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
+        nav a {
+            color: ' . $textColor . ';
+            text-decoration: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
 
-nav a:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
+        nav a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
 
-.contact-main {
-    padding: 40px 20px;
-    min-height: calc(100vh - 200px);
-}
+        .contact-main {
+            padding: 40px 20px;
+            min-height: calc(100vh - 200px);
+        }
 
-.contact-content {
-    max-width: 1000px;
-    margin: 0 auto;
-}
+        .contact-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
 
-.section-title {
-    color: ' . $textColor . ';
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 30px;
-    border-bottom: 3px solid #3b82f6;
-    padding-bottom: 10px;
-}
+        .section-title {
+            color: ' . $textColor . ';
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 10px;
+        }
 
-/* Sección de información de contacto */
-.contact-info-section {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 40px;
-    border: 1px solid #e9ecef;
-}
+        /* Sección de información de contacto */
+        .contact-info-section {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            border: 1px solid #e9ecef;
+        }
 
-.contact-items-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
+        .contact-items-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
 
-.contact-item {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
-}
+        .contact-item {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
 
-.contact-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
+        .contact-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-.contact-title {
-    font-weight: bold;
-    color: ' . $textColor . ';
-    font-size: 16px;
-    margin-bottom: 8px;
-    border-bottom: 2px solid #3b82f6;
-    padding-bottom: 5px;
-}
+        .contact-title {
+            font-weight: bold;
+            color: ' . $textColor . ';
+            font-size: 16px;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 5px;
+        }
 
-.contact-text {
-    color: #666;
-    font-size: 15px;
-    line-height: 1.5;
-}
+        .contact-text {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+        }
 
-.contact-placeholder {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    border: 2px dashed #ddd;
-}
+        .contact-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #ddd;
+        }
 
-.contact-placeholder-icon {
-    font-size: 48px;
-    margin-bottom: 15px;
-}
+        .contact-placeholder-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
 
-.contact-placeholder-text {
-    font-size: 18px;
-    font-style: italic;
-}
+        .contact-placeholder-text {
+            font-size: 18px;
+            font-style: italic;
+        }
 
-/* Sección del mapa */
-.map-section {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 40px;
-    border: 1px solid #e9ecef;
-}
+        /* Sección del mapa */
+        .map-section {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            border: 1px solid #e9ecef;
+        }
 
-.map-title {
-    color: ' . $textColor . ';
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 15px;
-}
+        .map-title {
+            color: ' . $textColor . ';
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
 
-.map-address {
-    color: #666;
-    text-align: center;
-    font-size: 16px;
-    margin-bottom: 20px;
-    font-style: italic;
-}
+        .map-address {
+            color: #666;
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
 
-.map-container {
-    width: 100%;
-    height: 350px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border: 2px solid #e9ecef;
-}
+        .map-container {
+            width: 100%;
+            height: 350px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 2px solid #e9ecef;
+        }
 
-.map-container iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
-/* Sección del formulario de contacto */
-.contact-form-section {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border: 1px solid #e9ecef;
-}
+        /* Sección del formulario de contacto */
+        .contact-form-section {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
 
-.contact-form {
-    max-width: 600px;
-    margin: 0 auto;
-}
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
-.form-group {
-    margin-bottom: 20px;
-}
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-.form-label {
-    display: block;
-    margin-bottom: 8px;
-    color: ' . $textColor . ';
-    font-weight: 600;
-    font-size: 14px;
-}
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: ' . $textColor . ';
+            font-weight: 600;
+            font-size: 14px;
+        }
 
-.form-input,
-.form-textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 6px;
-    border: 2px solid #e9ecef;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-    background-color: #fff;
-    box-sizing: border-box;
-    font-family: ' . $fontFamily . ';
-}
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 2px solid #e9ecef;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background-color: #fff;
+            box-sizing: border-box;
+            font-family: ' . $fontFamily . ';
+        }
 
-.form-input:focus,
-.form-textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
 
-.form-textarea {
-    min-height: 120px;
-    resize: vertical;
-}
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
 
-.form-submit {
-    width: 100%;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 15px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-}
+        .form-submit {
+            width: 100%;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
 
-.form-submit:hover {
-    background-color: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-}
+        .form-submit:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
 
-footer {
-    background-color: ' . $footerBgColor . ';
-    padding: 15px;
-    text-align: center;
-    color: ' . $footerTextColor . ';
-    margin-top: auto;
-}
+        footer {
+            background-color: ' . $footerBgColor . ';
+            padding: 15px;
+            text-align: center;
+            color: ' . $footerTextColor . ';
+            margin-top: auto;
+        }
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .contact-items-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .contact-main {
-        padding: 20px 10px;
-    }
-    
-    .contact-info-section,
-    .map-section,
-    .contact-form-section {
-        padding: 20px;
-    }
-    
-    .section-title {
-        font-size: 24px;
-    }
-    
-    .map-container {
-        height: 250px;
-    }
-}';
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .contact-items-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-main {
+                padding: 20px 10px;
+            }
+            
+            .contact-info-section,
+            .map-section,
+            .contact-form-section {
+                padding: 20px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+            
+            .map-container {
+                height: 250px;
+            }
+        }';
 }
     // Funciones auxiliares
     private function extractVideoId($url)
@@ -1204,8 +1202,8 @@ footer {
         $path = isset($icons[$iconName]) ? $icons[$iconName] : $icons['star'];
         
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#3b82f6" width="48px" height="48px">
-    ' . $path . '
-</svg>';
+            ' . $path . '
+        </svg>';
     }
 
     private function lightenColor($hex, $percent)
@@ -1425,7 +1423,6 @@ private function processWelcomePage($webId, $data, $webPath)
                 }
             } catch (\Exception $e) {
                 \Log::warning('Error guardando imagen ' . $imageId . ': ' . $e->getMessage());
-                // Continuar con las demás imágenes
             }
         }
     } else {
@@ -1562,7 +1559,7 @@ private function processContactPage($webId, $data, $webPath)
         $welcomePageData = null;
         $contactPageData = null;
         
-        // Procesar mainPageData (obligatorio)
+        // Procesar mainPageData
         $mainPageDataRaw = $request->input('mainPageData');
         $mainPageData = json_decode($mainPageDataRaw, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -1609,7 +1606,7 @@ private function processContactPage($webId, $data, $webPath)
 
         // 5. Crear registro en la tabla webs como borrador
         $web = Web::create([
-            'url' => '', // Sin URL ya que es borrador
+            'url' => '', 
             'user_id' => $user_id,
             'name' => trim($name),
             'design_config' => $designConfig,
@@ -1649,7 +1646,7 @@ private function processContactPage($webId, $data, $webPath)
                         try {
                             $imageContent = base64_decode($imageData);
                             if ($imageContent !== false) {
-                                $extension = 'png'; // Podrías detectar la extensión real del base64
+                                $extension = 'png'; 
                                 $filename = $imageId . '.' . $extension;
                                 $filepath = $draftPath . '/' . $filename;
                                 
