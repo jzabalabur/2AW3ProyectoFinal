@@ -155,24 +155,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('→ Incluyendo datos de contacto');
                 formData.append('contactData', contactData);
             }
+function listAllImageKeys() {
+    const transaction = db.transaction([STORE_NAME], 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.getAllKeys();
 
+    request.onsuccess = () => {
+        console.log('🔑 Claves en IndexedDB:', request.result);
+    };
+    request.onerror = (e) => {
+        console.error('❌ Error al leer claves:', e.target.error);
+    };
+}
             // 5. Procesar imágenes de IndexedDB
             console.log('Procesando imágenes...');
             try {
                 const db = await openIDB();
                 const imageKeys = ['main-logo', 'main-photo', 'logoBienvenida', 'background'];
                 const images = {};
-                
+                listAllImageKeys()
                 for (const key of imageKeys) {
                     try {
                         const image = await getImageFromDB(db, key);
                         if (image && image.data) {
                             // Verificar que la imagen tiene el formato correcto
-                            if (image.data.includes('data:image/')) {
+                            if (typeof image.data === 'string' && image.data.startsWith('data:image/')) {
                                 images[key] = image.data.split(',')[1]; // Remover prefijo base64
                                 console.log(`→ Imagen ${key} procesada`);
-                            }
+                             }
                         }
+                        console.log(`📦 Imagen recuperada (${key}):`, image);
+
                     } catch (e) {
                         console.warn(`No se encontró imagen ${key}:`, e.message);
                     }

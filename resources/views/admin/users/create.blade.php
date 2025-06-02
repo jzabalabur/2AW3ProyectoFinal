@@ -52,7 +52,7 @@
 
             <!-- Campo: Confirmar Contraseña -->
             <div class="mb-4">
-                <label for="password_confirmation" class="block text-gray-700">{{ __('dashboard.pass_crear') }}</label>
+                <label for="password_confirmation" class="block text-gray-700">{{ __('dashboard.pass_confirm') }}</label>
                 <input type="password" name="password_confirmation" id="password_confirmation" 
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
             </div>

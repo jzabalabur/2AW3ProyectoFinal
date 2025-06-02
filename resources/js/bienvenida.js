@@ -31,7 +31,7 @@ const fontFamilyInput = document.getElementById('font-family');
 
 // IndexedDB setup
 let db;
-const DB_NAME = 'WelcomePageDB';
+const DB_NAME = 'WebDesignDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'images';
 
@@ -60,47 +60,154 @@ function initDB() {
 
 function saveImageToDB(id, file) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([STORE_NAME], 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
-        
+        if (!db) {
+            console.error('Base de datos no inicializada');
+            reject('Base de datos no inicializada');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (event) => {
+            const dataUrl = event.target.result;
+
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+
             const request = store.put({
                 id: id,
-                data: event.target.result,
-                type: file.type,
                 name: file.name,
+                type: file.type,
+                data: dataUrl,
                 lastModified: file.lastModified
             });
 
-            request.onsuccess = () => resolve();
-            request.onerror = (event) => reject(event.target.error);
+            request.onsuccess = () => {
+                console.log(`✅ Imagen ${id} guardada en IndexedDB`);
+                resolve({
+                    id: id,
+                    name: file.name
+                });
+            };
+            request.onerror = (event) => {
+                console.error(`❌ Error al guardar imagen ${id}:`, event.target.error);
+                reject(event.target.error);
+            };
         };
-        reader.onerror = (event) => reject(event.target.error);
-        reader.readAsDataURL(file);
+
+        reader.onerror = (event) => {
+            console.error(`❌ Error al leer archivo ${id}:`, event.target.error);
+            reject(event.target.error);
+        };
+
+        reader.readAsDataURL(file); // primero leemos el archivo
     });
 }
 
-// Initialize DB when the page loads
+// function saveImageToDB(id, file) {
+//     return new Promise((resolve, reject) => {
+//         // Verificar que la base de datos esté inicializada
+//         if (!db) {
+//             console.error('Base de datos no inicializada');
+//             reject('Base de datos no inicializada');
+//             return;
+//         }
+        
+//         const transaction = db.transaction([STORE_NAME], 'readwrite');
+//         const store = transaction.objectStore(STORE_NAME);
+        
+//         const reader = new FileReader();
+//         // reader.onload = (event) => {
+//         //     const request = store.put({
+//         //         id: id,
+//         //         data: event.target.result,
+//         //         type: file.type,
+//         //         name: file.name,
+//         //         lastModified: file.lastModified
+//         //     });
+
+//             reader.onload = (event) => {
+//             const imageData = {
+//                 id: id,
+//                 data: event.target.result,
+//                 type: file.type,
+//                 name: file.name,
+//                 lastModified: file.lastModified
+//             };
+
+//             const request = store.put(imageData);
+
+//             request.onsuccess = () => {
+//                 console.log(`✅ Imagen ${id} guardada en IndexedDB`);
+//                 resolve();
+//             };
+//             request.onerror = (event) => {
+//                 console.error(`❌ Error al guardar imagen ${id}:`, event.target.error);
+//                 reject(event.target.error);
+//             };
+//         };
+//         reader.onerror = (event) => {
+//             console.error(`❌ Error al leer archivo ${id}:`, event.target.error);
+//             reject(event.target.error);
+//         };
+//         reader.readAsDataURL(file);
+//     });
+// }
+
 initDB().catch(console.error);
 
-// Store images when they are selected
 if (logoInput) {
-    logoInput.addEventListener('change', () => {
-        const file = logoInput.files[0];
-        if (file) {
-            saveImageToDB('logoBienvenida', file).catch(console.error);
-        }
-    });
+    // logoInput.addEventListener('change', () => {
+    //     const file = logoInput.files[0];
+    //     if (file) {
+    //         // Asegurar que la DB esté inicializada antes de guardar
+    //         if (db) {
+    //             saveImageToDB('logoBienvenida', file).catch(console.error);
+    //         } else {
+    //             initDB().then(() => {
+    //                 saveImageToDB('logoBienvenida', file).catch(console.error);
+    //             }).catch(console.error);
+    //         }
+    //     }
+    // });
+    logoInput.addEventListener('change', async () => {
+    const file = logoInput.files[0];
+    if (!file) return;
+
+    try {
+        await initDB(); // siempre asegúrate
+        await saveImageToDB('logoBienvenida', file);
+    } catch (err) {
+        console.error('❌ Error al guardar logo:', err);
+    }
+});
 }
 
 if (backgroundImageInput) {
-    backgroundImageInput.addEventListener('change', () => {
-        const file = backgroundImageInput.files[0];
-        if (file) {
-            saveImageToDB('background', file).catch(console.error);
-        }
-    });
+    // backgroundImageInput.addEventListener('change', () => {
+    //     const file = backgroundImageInput.files[0];
+    //     if (file) {
+    //         // Asegurar que la DB esté inicializada antes de guardar
+    //         if (db) {
+    //             saveImageToDB('background', file).catch(console.error);
+    //         } else {
+    //             initDB().then(() => {
+    //                 saveImageToDB('background', file).catch(console.error);
+    //             }).catch(console.error);
+    //         }
+    //     }
+    // });
+    backgroundImageInput.addEventListener('change', async () => {
+    const file = backgroundImageInput.files[0];
+    if (!file) return;
+
+    try {
+        await initDB();
+        console.log('📁 Archivo recibido para guardar:', file.name);
+        await saveImageToDB('background', file);
+    } catch (err) {
+        console.error('❌ Error al guardar fondo:', err);
+    }
+});
 }
 
 // Función para actualizar la vista previa
@@ -307,7 +414,7 @@ function saveWelcomeData() {
         if (backgroundImageInput && backgroundImageInput.files[0]) {
             formData.append('background_image', backgroundImageInput.files[0]);
         }
-        
+
         fetch(window.webData.updateUrl, {
             method: 'POST',
             body: formData
@@ -339,7 +446,7 @@ function loadExistingData(data) {
     
     console.log('📥 Iniciando carga de datos existentes:', data);
     
-    // Cargar título - manejar ambos formatos
+    // Cargar título 
     const welcomeTitle = data.welcome_title || data.title;
     if (welcomeTitle && welcomeTitleInput) {
         console.log('✅ Cargando título:', welcomeTitle);
@@ -348,7 +455,7 @@ function loadExistingData(data) {
         console.log('⚠️ Título no encontrado. welcome_title:', data.welcome_title, 'title:', data.title);
     }
     
-    // Cargar mensaje - manejar ambos formatos
+    // Cargar mensaje
     const welcomeMessage = data.welcome_message || data.message;
     if (welcomeMessage && welcomeMessageInput) {
         console.log('✅ Cargando mensaje:', welcomeMessage);
@@ -357,7 +464,7 @@ function loadExistingData(data) {
         console.log('⚠️ Mensaje no encontrado. welcome_message:', data.welcome_message, 'message:', data.message);
     }
     
-    // Cargar fuente - manejar ambos formatos
+    // Cargar fuente
     const fontFamily = data.font_family || data.fontFamily;
     if (fontFamily && fontFamilyInput) {
         console.log('✅ Cargando fuente:', fontFamily);
@@ -366,7 +473,7 @@ function loadExistingData(data) {
         console.log('⚠️ Fuente no encontrada. font_family:', data.font_family, 'fontFamily:', data.fontFamily);
     }
     
-    // Cargar color de fondo - manejar ambos formatos
+    // Cargar color de fondo
     const backgroundColor = data.background_color || data.bgColor;
     if (backgroundColor && welcomeBgColorInput) {
         console.log('✅ Cargando color de fondo:', backgroundColor);
@@ -375,7 +482,7 @@ function loadExistingData(data) {
         console.log('⚠️ Color de fondo no encontrado. background_color:', data.background_color, 'bgColor:', data.bgColor);
     }
     
-    // Cargar tamaño del logo - manejar ambos formatos
+    // Cargar tamaño del logo 
     const logoSize = data.logo_size || data.logoSize;
     if (logoSize && logoSizeInput) {
         console.log('✅ Cargando tamaño del logo:', logoSize);
@@ -384,35 +491,35 @@ function loadExistingData(data) {
         if (logoSizeValue) logoSizeValue.textContent = logoSize + 'px';
     }
     
-    // Cargar posición del logo - manejar ambos formatos
+    // Cargar posición del logo 
     const logoPosition = data.logo_position || data.logoPosition;
     if (logoPosition && logoPositionInput) {
         console.log('✅ Cargando posición del logo:', logoPosition);
         logoPositionInput.value = logoPosition;
     }
     
-    // Cargar texto del botón - manejar ambos formatos
+    // Cargar texto del botón 
     const buttonText = data.button_text || data.buttonText;
     if (buttonText && buttonTextInput) {
         console.log('✅ Cargando texto del botón:', buttonText);
         buttonTextInput.value = buttonText;
     }
     
-    // Cargar color del botón - manejar ambos formatos
+    // Cargar color del botón 
     const buttonColor = data.button_color || data.buttonColor;
     if (buttonColor && buttonColorInput) {
         console.log('✅ Cargando color del botón:', buttonColor);
         buttonColorInput.value = buttonColor;
     }
     
-    // Cargar color del texto del botón - manejar ambos formatos
+    // Cargar color del texto del botón
     const buttonTextColor = data.button_text_color || data.buttonTextColor;
     if (buttonTextColor && buttonTextColorInput) {
         console.log('✅ Cargando color del texto del botón:', buttonTextColor);
         buttonTextColorInput.value = buttonTextColor;
     }
     
-    // Cargar tamaño de fuente del botón - manejar ambos formatos
+    // Cargar tamaño de fuente del botón 
     const buttonFontSize = data.button_font_size || data.buttonFontSize;
     if (buttonFontSize && buttonFontSizeInput) {
         console.log('✅ Cargando tamaño de fuente del botón:', buttonFontSize);
@@ -421,7 +528,7 @@ function loadExistingData(data) {
         if (buttonFontSizeValue) buttonFontSizeValue.textContent = buttonFontSize + 'px';
     }
     
-    // Cargar padding del botón - manejar ambos formatos
+    // Cargar padding del botón 
     const buttonPadding = data.button_padding || data.buttonPadding;
     if (buttonPadding && buttonPaddingInput) {
         console.log('✅ Cargando padding del botón:', buttonPadding);
@@ -430,14 +537,14 @@ function loadExistingData(data) {
         if (buttonPaddingValue) buttonPaddingValue.textContent = buttonPadding + 'px';
     }
     
-    // Cargar color de fondo del contenido - manejar ambos formatos
+    // Cargar color de fondo del contenido 
     const contentBgColor = data.content_bg_color || data.contentBgColor;
     if (contentBgColor && contentBgColorInput) {
         console.log('✅ Cargando color de fondo del contenido:', contentBgColor);
         contentBgColorInput.value = contentBgColor;
     }
     
-    // Cargar opacidad del fondo del contenido - manejar ambos formatos
+    // Cargar opacidad del fondo del contenido 
     const contentBgOpacity = data.content_bg_opacity || data.contentBgOpacity;
     if (contentBgOpacity && contentBgOpacityInput) {
         console.log('✅ Cargando opacidad del fondo del contenido:', contentBgOpacity);
@@ -446,14 +553,14 @@ function loadExistingData(data) {
         if (contentBgOpacityValue) contentBgOpacityValue.textContent = contentBgOpacity + '%';
     }
     
-    // Cargar color del texto del contenido - manejar ambos formatos
+    // Cargar color del texto del contenido 
     const contentTextColor = data.content_text_color || data.contentTextColor;
     if (contentTextColor && contentTextColorInput) {
         console.log('✅ Cargando color del texto del contenido:', contentTextColor);
         contentTextColorInput.value = contentTextColor;
     }
     
-    // Cargar tamaño de fuente del título - manejar ambos formatos
+    // Cargar tamaño de fuente del título 
     const titleFontSize = data.title_font_size || data.titleFontSize;
     if (titleFontSize && titleFontSizeInput) {
         console.log('✅ Cargando tamaño de fuente del título:', titleFontSize);
@@ -462,7 +569,7 @@ function loadExistingData(data) {
         if (titleFontSizeValue) titleFontSizeValue.textContent = titleFontSize + 'px';
     }
     
-    // Cargar tamaño de fuente del párrafo - manejar ambos formatos
+    // Cargar tamaño de fuente del párrafo 
     const paragraphFontSize = data.paragraph_font_size || data.paragraphFontSize;
     if (paragraphFontSize && paragraphFontSizeInput) {
         console.log('✅ Cargando tamaño de fuente del párrafo:', paragraphFontSize);
@@ -471,7 +578,7 @@ function loadExistingData(data) {
         if (paragraphFontSizeValue) paragraphFontSizeValue.textContent = paragraphFontSize + 'px';
     }
     
-    // Cargar checkboxes - manejar ambos formatos
+    // Cargar checkboxes 
     const titleBold = data.title_bold !== undefined ? data.title_bold : data.titleBold;
     if (titleBold !== undefined && titleBoldInput) {
         console.log('✅ Cargando título en negrita:', titleBold);
@@ -496,7 +603,7 @@ function loadExistingData(data) {
         paragraphItalicInput.checked = paragraphItalic === true || paragraphItalic === 'true' || paragraphItalic === 1;
     }
     
-    // Manejar radio buttons de tipo de fondo - manejar ambos formatos
+    // Manejar radio buttons de tipo de fondo 
     const backgroundType = data.background_type || data.backgroundType;
     if (backgroundType) {
         console.log('✅ Cargando tipo de fondo:', backgroundType);
@@ -516,7 +623,6 @@ function loadExistingData(data) {
         }
     }
     
-    // 🖼️ CARGAR IMÁGENES - NUEVO
     console.log('🖼️ Iniciando carga de imágenes...');
     
     // Mostrar imágenes existentes en el DOM
@@ -525,10 +631,10 @@ function loadExistingData(data) {
     // Cargar archivos de imagen en los inputs (async)
     loadImagesFromServer(data).then(() => {
         console.log('✅ Imágenes cargadas completamente');
-        updatePreview(); // Actualizar preview después de cargar imágenes
+        updatePreview(); 
     }).catch(error => {
         console.error('❌ Error al cargar imágenes:', error);
-        updatePreview(); // Actualizar preview aunque falle la carga de imágenes
+        updatePreview(); 
     });
     
     console.log('📥 Finalizando carga de datos - actualizando preview inicial');
@@ -715,7 +821,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Event listeners para actualizar la vista previa automáticamente - con verificaciones
+// Event listeners para actualizar la vista previa automáticamente 
 if (welcomeTitleInput) welcomeTitleInput.addEventListener('input', updatePreview);
 if (welcomeMessageInput) welcomeMessageInput.addEventListener('input', updatePreview);
 if (welcomeBgColorInput) welcomeBgColorInput.addEventListener('input', updatePreview);
