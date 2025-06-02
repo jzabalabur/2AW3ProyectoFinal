@@ -1,0 +1,4 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine Off
+    DirectoryIndex welcome.html main.html contact.html index.html
+</IfModule>

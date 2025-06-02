@@ -347,7 +347,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (data.success) {
                     alert('¡Página publicada con éxito!');
-                    window.location.href = data.url;
+                    setTimeout(() => {
+                            window.location.href = '/perfil';
+                    }, 3000);
                 } else {
                     throw new Error(data.message || 'Error al publicar');
                 }

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto</title>
+    <link rel="stylesheet" href="css/contact.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Contacto</h1>
+        </div>
+    </header>
+    
+    <nav>
+        <a href="main.html">Inicio</a>
+        <a href="contact.html">Contacto</a>
+    </nav>
+    
+    <main class="contact-main">
+        <div class="contact-content">
+            <div class="contact-info-section">
+                <h2 class="section-title">Información de Contacto</h2>
+                <div class="contact-items-container">
+                    <div class="contact-placeholder">
+    <div class="contact-placeholder-icon">📞</div>
+    <div class="contact-placeholder-text">Información de contacto no disponible</div>
+</div>
+                </div>
+            </div>
+            
+            <div class="map-section">
+    <h2 class="map-title">Nuestra Ubicación</h2>
+    <p class="map-address">calle mayor 10, madrid</p>
+    <div class="map-container">
+        <iframe src="https://maps.google.com/maps?q=calle+mayor+10%2C+madrid&output=embed" 
+                frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+            
+            <div class="contact-form-section">
+                <h2 class="section-title">Envíanos un mensaje</h2>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Correo electrónico:</label>
+                        <input type="email" id="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" class="form-label">Asunto:</label>
+                        <input type="text" id="subject" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Mensaje:</label>
+                        <textarea id="message" class="form-textarea" required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">Enviar Mensaje</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>© 2023 Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

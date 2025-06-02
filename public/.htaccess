@@ -4,7 +4,7 @@
     </IfModule>
 
     RewriteEngine On
-
+    RewriteRule ^webs/ - [L]
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -24,6 +24,6 @@
     RewriteRule ^ index.php [L]
 
     # Servir archivos estáticos directamente
-    RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^(.*)$ $1 [L]
+    # RewriteCond %{REQUEST_FILENAME} -f
+    # RewriteRule ^(.*)$ $1 [L]
 </IfModule>

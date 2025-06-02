@@ -189,6 +189,76 @@ class PublicarController extends Controller
                 }
             }
     
+
+    
+                    //PRUEBAS publicar en apache y bind---------------------------------------------
+            try {
+        //Configurar Apache
+                $webPathApache = "/home/isard/proyectoFinal/public/webs/$domain";
+
+        \Log::info('Llamando script Apache para configurar Virtual Host', compact('domain', 'webPathApache'));
+        $apacheCmd = "ssh -i /home/sail/.ssh/id_ed25519 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null isard@192.168.99.100 /usr/local/bin/configure_apache_vhost.sh " .
+                      escapeshellarg($domain) . ' ' . escapeshellarg($webPathApache);
+
+        exec($apacheCmd . ' 2>&1', $apacheOutput, $apacheStatus);
+
+        if ($apacheStatus !== 0) {
+            \Log::error("Fallo configurando Apache", [
+                'command' => $apacheCmd,
+                'output' => $apacheOutput
+            ]);
+            return response()->json([
+                'success' => false,
+                'step' => 'apache',
+                'message' => "Error al configurar Apache: " . implode("\n", $apacheOutput)
+            ], 500);
+        }
+
+        \Log::info("Apache configurado correctamente", ['output' => $apacheOutput]);
+
+
+        //Configurar BIND
+        $serverIP = '192.168.99.100'; // o IP del servidor
+        \Log::info('Llamando script BIND para configurar zona DNS', compact('domain', 'serverIP'));
+
+        $bindCmd = "ssh -i /home/sail/.ssh/id_ed25519 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null isard@192.168.99.100 /usr/local/bin/configure_bind_zone.sh " .
+                    escapeshellarg($domain) . ' ' . escapeshellarg($serverIP);
+
+        exec($bindCmd . ' 2>&1', $bindOutput, $bindStatus);
+
+        if ($bindStatus !== 0) {
+            \Log::error("Fallo configurando BIND", [
+                'command' => $bindCmd,
+                'output' => $bindOutput
+            ]);
+            return response()->json([
+                'success' => false,
+                'step' => 'bind',
+                'message' => "Error al configurar DNS: " . implode("\n", $bindOutput)
+            ], 500);
+        }
+
+        \Log::info("BIND configurado correctamente", ['output' => $bindOutput]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Infraestructura configurada correctamente para {$domain}",
+            'domain' => $domain
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('Error general en configuración de infraestructura', [
+            'domain' => $domain,
+            'error' => $e->getMessage()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error inesperado: ' . $e->getMessage()
+        ], 500);
+    }
+        //FIN PRUEBAS---------------------------------------------------------------------
+
             \Log::info('=== PUBLICACIÓN COMPLETADA EXITOSAMENTE ===');
     
             // Determinar la URL inicial según si hay página de bienvenida
@@ -204,7 +274,7 @@ class PublicarController extends Controller
                 'message' => 'Web publicada con éxito',
                 'url' => $initialUrl
             ]);
-    
+
         } catch (\Exception $e) {
             \Log::error('=== ERROR EN PUBLISH ===', [
                 'message' => $e->getMessage(),
@@ -220,6 +290,8 @@ class PublicarController extends Controller
                 'message' => 'Error al publicar la web: ' . $e->getMessage()
             ], 500);
         }
+
+
     }
 
     // Método para republicar una web existente (nuevo)
@@ -1277,7 +1349,7 @@ footer {
         throw new \Exception('Error decodificando datos de página principal');
     }
     
-    // Procesar imágenes de forma segura
+    // Procesar imágenes
     $images = [];
     if (isset($data['images']) && is_array($data['images']) && count($data['images']) > 0) {
         \Log::info('Procesando imágenes para página principal...');
@@ -1339,7 +1411,7 @@ private function processWelcomePage($webId, $data, $webPath)
         throw new \Exception('Error decodificando datos de página de bienvenida');
     }
     
-    // Procesar imágenes de forma segura
+    // Procesar imágenes
     $images = [];
     if (isset($data['images']) && is_array($data['images']) && count($data['images']) > 0) {
         \Log::info('Procesando imágenes para página de bienvenida...');

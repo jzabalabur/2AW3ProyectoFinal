@@ -19,6 +19,8 @@ services:
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
+            - '/home/isard/docker-ssh-keys/.ssh:/root/.ssh:rw'
+            - '/home/isard/docker-ssh-keys/.ssh:/home/sail/.ssh:rw'
         networks:
             - sail
         depends_on:

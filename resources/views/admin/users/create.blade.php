@@ -42,7 +42,7 @@
 
             <!-- Campo: Contraseña -->
             <div class="mb-4">
-                <label for="password" class="block text-gray-700">{{ __('dashboard.email') }}</label>
+                <label for="password" class="block text-gray-700">{{ __('dashboard.pass') }}</label>
                 <input type="password" name="password" id="password" 
                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 @error('password')

@@ -315,7 +315,7 @@ function saveWelcomeData() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showSuccessMessage(data.message || 'Página de bienvenida guardada correctamente');
+                // showSuccessMessage(data.message || 'Página de bienvenida guardada correctamente');
                 resolve(data);
             } else {
                 alert('Error al guardar: ' + (data.message || 'Inténtalo de nuevo'));
